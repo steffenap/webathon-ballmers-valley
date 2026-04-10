@@ -15,7 +15,7 @@
 
 # \<Prosjektnavn>
 
-**Balmers Valley**
+**Ballmers Valley**
 
 ## Medlemmer
 
