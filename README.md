@@ -11,19 +11,17 @@
 1. Pass på at dere har pushet alt til `main` innen 12:00 søndag.
 2. Lag en presentasjon av prosjektet, hva dere har gjort, hva ideen er, osv.
 
-## Mal
-
 ---
 
 # \<Prosjektnavn>
 
-\<Gruppenavn>
+**Balmers Valley**
 
 ## Medlemmer
 
-- \<navn>
-- \<navn>
-- \<navn>
+- Steffen Andre Pettersen
+- Jonas Haukenes
+- Jakob Rødal Skaar
 
 ## Beskrivelse
 
