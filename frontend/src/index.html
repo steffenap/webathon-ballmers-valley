@@ -1,5 +1,601 @@
-<html>
-    <body>
-        <h1>Hello</h1>
-    </body>
-</html>
+
+<!DOCTYPE html>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  :root {
+    --bg: #0d0f14;
+    --surface: #141720;
+    --surface2: #1c2030;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #eeeaf2;
+    --muted: #7a7f96;
+    --accent: #7c5cfc;
+    --accent2: #a78bfa;
+    --green: #22d3a0;
+    --red: #f04b4b;
+    --amber: #f59e0b;
+    --blue: #38bdf8;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 220px 1fr 260px;
+    grid-template-rows: 56px 1fr;
+    height: 100vh;
+    min-height: 600px;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 16px;
+  }
+  .logo {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .logo span { color: var(--accent2); }
+  .topbar-center { flex: 1; display: flex; justify-content: center; }
+  .nav-tabs { display: flex; gap: 2px; background: var(--bg); border-radius: 8px; padding: 3px; }
+  .nav-tab {
+    font-family: var(--sans); font-size: 12px; font-weight: 600;
+    padding: 5px 14px; border-radius: 6px; cursor: pointer;
+    color: var(--muted); border: none; background: none; letter-spacing: 0.3px;
+    transition: all 0.15s;
+  }
+  .nav-tab.active { background: var(--surface2); color: var(--text); }
+  .nav-tab:hover:not(.active) { color: var(--text); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .avatar-sm {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: white;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+  }
+  .sidebar-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--muted); text-transform: uppercase; padding: 8px 8px 4px;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 8px; cursor: pointer;
+    color: var(--muted); font-size: 13px; font-weight: 600;
+    transition: all 0.15s; border: 1px solid transparent;
+  }
+  .sidebar-item:hover { background: var(--surface2); color: var(--text); }
+  .sidebar-item.active { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+  .sidebar-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+  .badge {
+    margin-left: auto; background: var(--accent); color: white;
+    font-size: 10px; font-weight: 700; padding: 2px 6px;
+    border-radius: 10px; font-family: var(--mono);
+  }
+
+  /* MAIN */
+  .main {
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* HEALTH CARD */
+  .health-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .health-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--green) 0%, var(--accent) 60%, var(--red) 100%);
+    opacity: 0.6;
+  }
+  .health-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .avatar-lg {
+    width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, #7c5cfc, #38bdf8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 800; color: white;
+  }
+  .health-info { flex: 1; }
+  .health-name { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+  .health-subtitle { font-size: 12px; color: var(--muted); }
+  .health-hp {
+    font-family: var(--mono); font-size: 26px; font-weight: 700;
+    color: var(--green); letter-spacing: -1px;
+  }
+  .health-hp span { font-size: 14px; color: var(--muted); font-weight: 400; }
+
+  .hp-bar-wrap { margin-bottom: 10px; }
+  .hp-bar-label {
+    display: flex; justify-content: space-between; font-size: 11px;
+    color: var(--muted); font-family: var(--mono); margin-bottom: 5px;
+  }
+  .hp-bar-track {
+    height: 10px; background: var(--bg); border-radius: 6px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .hp-bar-fill {
+    height: 100%; border-radius: 6px;
+    transition: width 0.6s ease;
+    position: relative;
+  }
+  .hp-bar-fill.high { background: linear-gradient(90deg, #22d3a0, #4ade80); }
+  .hp-bar-fill.mid { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .hp-bar-fill.low { background: linear-gradient(90deg, #f04b4b, #fb923c); }
+
+  .decay-row {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--muted); font-family: var(--mono);
+  }
+  .decay-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  /* QUICK ACTIONS */
+  .section-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--muted); text-transform: uppercase;
+  }
+  .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .action-btn {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 10px; padding: 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    transition: all 0.15s; color: var(--text);
+    text-align: left;
+  }
+  .action-btn:hover { background: var(--surface2); border-color: var(--accent); transform: translateY(-1px); }
+  .action-btn:active { transform: translateY(0); }
+  .action-icon {
+    width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .action-icon.green { background: rgba(34,211,160,0.12); }
+  .action-icon.blue { background: rgba(56,189,248,0.12); }
+  .action-icon.purple { background: rgba(124,92,252,0.12); }
+  .action-icon.amber { background: rgba(245,158,11,0.12); }
+  .action-label { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+  .action-sub { font-size: 11px; color: var(--muted); font-family: var(--mono; }
+
+  /* ACTIVITY LOG */
+  .log-list { display: flex; flex-direction: column; gap: 6px; }
+  .log-item {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
+  }
+  .log-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .log-dot.green { background: var(--green); }
+  .log-dot.blue { background: var(--blue); }
+  .log-dot.amber { background: var(--amber); }
+  .log-text { flex: 1; font-size: 12px; }
+  .log-hp { font-family: var(--mono); font-size: 12px; color: var(--green); font-weight: 700; }
+  .log-time { font-size: 10px; color: var(--muted); font-family: var(--mono); }
+
+  /* RIGHT PANEL */
+  .right-panel {
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .group-card {
+    background: var(--bg); border: 1px solid var(--border2);
+    border-radius: 12px; padding: 14px; margin-bottom: 2px;
+  }
+  .group-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .group-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .group-name { font-size: 13px; font-weight: 700; }
+  .group-count { font-size: 10px; color: var(--muted); font-family: var(--mono); margin-left: auto; }
+  
+  .member-row {
+    display: flex; align-items: center; gap: 8px; padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .member-row:last-child { border-bottom: none; }
+  .member-avatar {
+    width: 26px; height: 26px; border-radius: 6px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: white;
+  }
+  .member-name { font-size: 12px; font-weight: 600; flex: 1; }
+  .member-hp-mini { width: 60px; }
+  .mini-bar-track { height: 5px; background: var(--surface2); border-radius: 3px; margin-top: 2px; }
+  .mini-bar-fill { height: 100%; border-radius: 3px; }
+  .member-hp-val { font-family: var(--mono); font-size: 10px; color: var(--muted); min-width: 28px; text-align: right; }
+
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .status-dot.online { background: var(--green); }
+  .status-dot.away { background: var(--amber); }
+  .status-dot.offline { background: var(--muted); }
+
+  /* Event upcoming */
+  .event-item {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px;
+    display: flex; gap: 10px; align-items: flex-start; cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .event-item:hover { border-color: var(--accent); }
+  .event-time-col { text-align: center; flex-shrink: 0; }
+  .event-day { font-size: 18px; font-weight: 800; font-family: var(--mono); line-height: 1; }
+  .event-month { font-size: 9px; color: var(--muted); font-family: var(--mono); text-transform: uppercase; }
+  .event-info { flex: 1; }
+  .event-title { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+  .event-meta { font-size: 11px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+  .event-tag {
+    font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px;
+    font-family: var(--mono);
+  }
+  .event-tag.hall { background: rgba(56,189,248,0.15); color: var(--blue); }
+  .event-tag.social { background: rgba(124,92,252,0.15); color: var(--accent2); }
+  .event-tag.assign { background: rgba(34,211,160,0.15); color: var(--green); }
+  .event-hp-reward { font-size: 10px; color: var(--green); font-family: var(--mono); font-weight: 700; }
+
+  /* Notification dot */
+  .notif { width: 8px; height: 8px; background: var(--red); border-radius: 50%; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+  .btn-sm {
+    font-family: var(--sans); font-size: 11px; font-weight: 700;
+    padding: 5px 12px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--border2); background: transparent;
+    color: var(--text); letter-spacing: 0.3px; transition: all 0.15s;
+  }
+  .btn-sm:hover { background: var(--surface2); }
+  .btn-sm.primary { background: var(--accent); border-color: var(--accent); color: white; }
+  .btn-sm.primary:hover { opacity: 0.85; }
+</style>
+
+<h2 class="sr-only">Study health tracker app — dashboard showing your health bar, quick actions, group members, and upcoming events</h2>
+
+<div class="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">study<span>hp</span></div>
+    <div class="topbar-center">
+      <div class="nav-tabs">
+        <button class="nav-tab active" onclick="setTab(this,'dashboard')">Dashboard</button>
+        <button class="nav-tab" onclick="setTab(this,'tasks')">Tasks</button>
+        <button class="nav-tab" onclick="setTab(this,'groups')">Groups</button>
+        <button class="nav-tab" onclick="setTab(this,'leaderboard')">Leaderboard</button>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="notif"></div>
+      <div class="avatar-sm">AL</div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-label">Overview</div>
+    <div class="sidebar-item active">
+      <span class="sidebar-icon">⬡</span> Dashboard
+    </div>
+    <div class="sidebar-item">
+      <span class="sidebar-icon">✓</span> My Tasks
+      <span class="badge">3</span>
+    </div>
+    <div class="sidebar-item">
+      <span class="sidebar-icon">◉</span> Study Hall
+    </div>
+    <div class="sidebar-item">
+      <span class="sidebar-icon">◈</span> Assignments
+    </div>
+
+    <div class="sidebar-label" style="margin-top:8px;">Groups</div>
+    <div class="sidebar-item">
+      <span class="sidebar-icon">▣</span> MATH301
+      <span class="badge" style="background:var(--green);">↑</span>
+    </div>
+    <div class="sidebar-item">
+      <span class="sidebar-icon">▣</span> CS Grind
+    </div>
+    <div class="sidebar-item">
+      <span class="sidebar-icon">▣</span> Bio Squad
+    </div>
+    <div class="sidebar-item" style="margin-top:4px; color:var(--accent2); border:1px dashed rgba(167,139,250,0.3);">
+      <span class="sidebar-icon">+</span> New Group
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- HEALTH BAR CARD -->
+    <div class="health-card">
+      <div class="health-top">
+        <div class="avatar-lg">AL</div>
+        <div class="health-info">
+          <div class="health-name">Alex Larsen</div>
+          <div class="health-subtitle">Level 7 · MATH301 · CS Grind</div>
+        </div>
+        <div class="health-hp" id="hp-val">742 <span>/ 1000 HP</span></div>
+      </div>
+      <div class="hp-bar-wrap">
+        <div class="hp-bar-label">
+          <span>HP</span>
+          <span id="hp-pct">74%</span>
+        </div>
+        <div class="hp-bar-track">
+          <div class="hp-bar-fill high" id="hp-bar" style="width: 74%;"></div>
+        </div>
+      </div>
+      <div class="decay-row">
+        <div class="decay-dot"></div>
+        <span>Decaying at <strong style="color:var(--text);">−18 HP/day</strong> · next tick in 6h 22m</span>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="section-title">Quick Actions</div>
+    <div class="actions-grid">
+      <button class="action-btn" onclick="gainHP(80,'Checked into Study Hall')">
+        <div class="action-icon blue">📍</div>
+        <div>
+          <div class="action-label">Study Hall Check-in</div>
+          <div class="action-sub">+80 HP</div>
+        </div>
+      </button>
+      <button class="action-btn" onclick="gainHP(120,'Submitted Assignment')">
+        <div class="action-icon green">📄</div>
+        <div>
+          <div class="action-label">Submit Assignment</div>
+          <div class="action-sub">+120 HP</div>
+        </div>
+      </button>
+      <button class="action-btn" onclick="gainHP(60,'Attended Social Study')">
+        <div class="action-icon purple">👥</div>
+        <div>
+          <div class="action-label">Social Study Session</div>
+          <div class="action-sub">+60 HP</div>
+        </div>
+      </button>
+      <button class="action-btn" onclick="gainHP(40,'Completed Task')">
+        <div class="action-icon amber">✦</div>
+        <div>
+          <div class="action-label">Complete a Task</div>
+          <div class="action-sub">+40 HP</div>
+        </div>
+      </button>
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <div class="section-title">Recent Activity</div>
+    <div class="log-list" id="log-list">
+      <div class="log-item">
+        <div class="log-dot green"></div>
+        <div class="log-text">Submitted <strong>Assignment 3</strong> — Calculus II</div>
+        <div class="log-hp">+120</div>
+        <div class="log-time">2h ago</div>
+      </div>
+      <div class="log-item">
+        <div class="log-dot blue"></div>
+        <div class="log-text">Checked into <strong>Study Hall B</strong></div>
+        <div class="log-hp">+80</div>
+        <div class="log-time">5h ago</div>
+      </div>
+      <div class="log-item">
+        <div class="log-dot amber"></div>
+        <div class="log-text"><strong>Daily decay</strong> applied</div>
+        <div class="log-hp" style="color:var(--red);">−18</div>
+        <div class="log-time">8h ago</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <!-- GROUP MEMBERS -->
+    <div class="section-title">MATH301 · Group</div>
+    <div class="group-card">
+      <div class="group-header">
+        <div class="group-dot"></div>
+        <div class="group-name">MATH301 Grinders</div>
+        <div class="group-count">5 members</div>
+      </div>
+
+      <div class="member-row">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#7c5cfc,#38bdf8)">AL</div>
+        <div class="member-name">Alex L. <span style="font-size:10px;color:var(--muted)">(you)</span></div>
+        <div class="member-hp-mini">
+          <div style="font-size:10px;color:var(--muted);font-family:var(--mono)">742</div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" style="width:74%;background:var(--green)"></div></div>
+        </div>
+        <div class="status-dot online"></div>
+      </div>
+
+      <div class="member-row">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#22d3a0,#0ea5e9)">SR</div>
+        <div class="member-name">Sara R.</div>
+        <div class="member-hp-mini">
+          <div style="font-size:10px;color:var(--muted);font-family:var(--mono)">910</div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" style="width:91%;background:var(--green)"></div></div>
+        </div>
+        <div class="status-dot online"></div>
+      </div>
+
+      <div class="member-row">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">TK</div>
+        <div class="member-name">Tom K.</div>
+        <div class="member-hp-mini">
+          <div style="font-size:10px;color:var(--muted);font-family:var(--mono)">450</div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" style="width:45%;background:var(--amber)"></div></div>
+        </div>
+        <div class="status-dot away"></div>
+      </div>
+
+      <div class="member-row">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#a78bfa,#ec4899)">MJ</div>
+        <div class="member-name">Mia J.</div>
+        <div class="member-hp-mini">
+          <div style="font-size:10px;color:var(--muted);font-family:var(--mono)">210</div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" style="width:21%;background:var(--red)"></div></div>
+        </div>
+        <div class="status-dot offline"></div>
+      </div>
+
+      <div class="member-row">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#38bdf8,#6366f1)">PO</div>
+        <div class="member-name">Paul O.</div>
+        <div class="member-hp-mini">
+          <div style="font-size:10px;color:var(--muted);font-family:var(--mono)">680</div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" style="width:68%;background:var(--green)"></div></div>
+        </div>
+        <div class="status-dot online"></div>
+      </div>
+    </div>
+
+    <!-- UPCOMING EVENTS -->
+    <div class="section-title">Upcoming</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div class="event-item">
+        <div class="event-time-col">
+          <div class="event-day">12</div>
+          <div class="event-month">Apr</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Study Hall Session</div>
+          <div class="event-meta">
+            <span class="event-tag hall">Hall B</span>
+            <span>14:00–17:00</span>
+          </div>
+        </div>
+        <div class="event-hp-reward">+80 HP</div>
+      </div>
+      <div class="event-item">
+        <div class="event-time-col">
+          <div class="event-day">13</div>
+          <div class="event-month">Apr</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Calculus II Due</div>
+          <div class="event-meta">
+            <span class="event-tag assign">Assignment</span>
+            <span>23:59</span>
+          </div>
+        </div>
+        <div class="event-hp-reward">+120 HP</div>
+      </div>
+      <div class="event-item">
+        <div class="event-time-col">
+          <div class="event-day">15</div>
+          <div class="event-month">Apr</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Group Study Night</div>
+          <div class="event-meta">
+            <span class="event-tag social">Social</span>
+            <span>MATH301</span>
+          </div>
+        </div>
+        <div class="event-hp-reward">+60 HP</div>
+      </div>
+    </div>
+
+    <button class="btn-sm primary" style="width:100%;margin-top:4px;">+ Schedule Event</button>
+
+  </div>
+</div>
+
+<div id="toast" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface2);border:1px solid var(--green);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;color:var(--green);font-family:var(--mono);transition:transform 0.3s ease;pointer-events:none;z-index:999;white-space:nowrap;"></div>
+
+<script>
+  let hp = 742;
+  const maxHp = 1000;
+
+  function setTab(el, tab) {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function gainHP(amount, label) {
+    hp = Math.min(maxHp, hp + amount);
+    updateHPBar();
+    addLog(label, amount);
+    showToast(`+${amount} HP — ${label}`);
+  }
+
+  function updateHPBar() {
+    const pct = Math.round((hp / maxHp) * 100);
+    const bar = document.getElementById('hp-bar');
+    const val = document.getElementById('hp-val');
+    const pctEl = document.getElementById('hp-pct');
+    bar.style.width = pct + '%';
+    bar.className = 'hp-bar-fill ' + (pct > 60 ? 'high' : pct > 30 ? 'mid' : 'low');
+    val.innerHTML = `${hp} <span>/ ${maxHp} HP</span>`;
+    pctEl.textContent = pct + '%';
+  }
+
+  function addLog(label, amount) {
+    const list = document.getElementById('log-list');
+    const item = document.createElement('div');
+    item.className = 'log-item';
+    item.style.opacity = '0'; item.style.transform = 'translateY(-6px)'; item.style.transition = 'all 0.3s ease';
+    item.innerHTML = `
+      <div class="log-dot green"></div>
+      <div class="log-text">${label}</div>
+      <div class="log-hp">+${amount}</div>
+      <div class="log-time">Just now</div>
+    `;
+    list.insertBefore(item, list.firstChild);
+    requestAnimationFrame(() => { item.style.opacity = '1'; item.style.transform = 'translateY(0)'; });
+    if (list.children.length > 5) list.removeChild(list.lastChild);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(80px)'; }, 2500);
+  }
+</script>
