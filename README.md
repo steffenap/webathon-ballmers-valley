@@ -1,19 +1,4 @@
-# Webathon 2026
-
-## Kom i gang
-
-1. Fork dette repoet til en av gruppemedlemene sin GitHub bruker.
-2. Send linken til repoet i Discord og ping @Webkom
-3. Slett alt i denne READMEen unntatt malen under (fyll den ut).
-
-## Levere / Presentere
-
-1. Pass på at dere har pushet alt til `main` innen 12:00 søndag.
-2. Lag en presentasjon av prosjektet, hva dere har gjort, hva ideen er, osv.
-
----
-
-# \<Prosjektnavn>
+# Grinder
 
 **Ballmers Valley**
 
@@ -28,7 +13,7 @@
 Har du noen gang lurt på hvem i studiegruppa som slacker mest?
 Tror du at du jobber nok med studiet?
 Vil du kunne straffe de som henger bak?
-Med <Insert Name> kan du tracke akkurat dette!
+Med <Grinder> kan du tracke akkurat dette!
 
 Sett opp en gruppe med alle studievennene dine, der alle får en health bar
 Over tid vil man sakte men sikkert miste liv, og da gjeder det å gjennomføre mål for å få mer!
