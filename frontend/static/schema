@@ -10,8 +10,8 @@ POST /group/<id>/task: create task
 very rest
 very demure
 
-/group/<id>/task/<id>/name: task name
-DELETE /group/<id>/task/<id>: delete task
+/task/<id>/title: task title
+DELETE /task/<id>: delete task
 
 POST /group/<id>/invite: invite  [requires INVITE]
 

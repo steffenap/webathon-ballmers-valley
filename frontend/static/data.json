@@ -1,200 +1,340 @@
 {
-    "user": {
-        "name": "Alex Larsen",
-        "initials": "AL",
-        "hp": 742,
-        "maxHp": 1000,
-        "hpDecay": 18,
-        "nextTick": "6h 22m",
-        "groups": ["MATH301", "CS Grind", "Bio Squad"]
+  "user": {
+    "name": "Alex Larsen",
+    "initials": "AL",
+    "hp": 742,
+    "maxHp": 1000,
+    "hpDecay": 18,
+    "nextTick": "6h 22m",
+    "groups": ["MATH301", "CS Grind", "Bio Squad"]
+  },
+  "taskBadge": 3,
+  "assignBadge": 2,
+  "nextEvents": [
+    {
+      "day": "13",
+      "month": "Apr",
+      "title": "Calculus II — Assignment 4",
+      "sub": "Due 23:59 · MATH301",
+      "reward": 120
     },
-    "taskBadge": 3,
-    "assignBadge": 2,
-    "nextEvents": [
+    {
+      "day": "13",
+      "month": "Apr",
+      "title": "Calculus II — Assignment 4",
+      "sub": "Due 23:59 · MATH301",
+      "reward": 120
+    },
+    {
+      "day": "13",
+      "month": "Apr",
+      "title": "Calculus II — Assignment 4",
+      "sub": "Due 23:59 · MATH301",
+      "reward": 120
+    }
+  ],
+  "tasks": {
+    "dueSoon": [
       {
-        "day": "13",
-        "month": "Apr",
-        "title": "Calculus II — Assignment 4",
-        "sub": "Due 23:59 · MATH301",
-        "reward": 120
+        "title": "Attend Thursday study hall session",
+        "source": "system",
+        "tags": [
+          { "color": "blue", "label": "Study Hall" },
+          { "color": "purple", "label": "MATH301" }
+        ],
+        "date": "Apr 13",
+        "hp": 40,
+        "done": false
       },
       {
-        "day": "13",
-        "month": "Apr",
-        "title": "Calculus II — Assignment 4",
-        "sub": "Due 23:59 · MATH301",
-        "reward": 120
+        "title": "Submit Calculus II problem set",
+        "source": "system",
+        "tags": [
+          { "color": "green", "label": "Assignment" },
+          { "color": "purple", "label": "MATH301" }
+        ],
+        "date": "Apr 13",
+        "hp": 80,
+        "done": false
       },
       {
-        "day": "13",
-        "month": "Apr",
-        "title": "Calculus II — Assignment 4",
-        "sub": "Due 23:59 · MATH301",
-        "reward": 120
+        "title": "Join Friday group review session",
+        "source": "admin",
+        "tags": [
+          { "color": "purple", "label": "Social" },
+          { "color": "blue", "label": "CS Grind" }
+        ],
+        "date": "Apr 14",
+        "hp": 60,
+        "done": false
       }
     ],
-    "tasks": {
-        "dueSoon": [
-            {
-                "title": "Attend Thursday study hall session",
-                "source": "system",
-                "tags": [
-                    { "color": "blue",   "label": "Study Hall" },
-                    { "color": "purple", "label": "MATH301"    }
-                ],
-                "date": "Apr 13",
-                "hp": 40,
-                "done": false
-            },
-            {
-                "title": "Submit Calculus II problem set",
-                "source": "system",
-                "tags": [
-                    { "color": "green",  "label": "Assignment" },
-                    { "color": "purple", "label": "MATH301"    }
-                ],
-                "date": "Apr 13",
-                "hp": 80,
-                "done": false
-            },
-            {
-                "title": "Join Friday group review session",
-                "source": "admin",
-                "tags": [
-                    { "color": "purple", "label": "Social"    },
-                    { "color": "blue",   "label": "CS Grind"  }
-                ],
-                "date": "Apr 14",
-                "hp": 60,
-                "done": false
-            }
+    "upcoming": [
+      {
+        "title": "Read Ch. 7 — Organic Chemistry",
+        "source": "admin",
+        "tags": [
+          { "color": "amber", "label": "Reading" },
+          { "color": "green", "label": "Bio Squad" }
         ],
-        "upcoming": [
-            {
-                "title": "Read Ch. 7 — Organic Chemistry",
-                "source": "admin",
-                "tags": [
-                    { "color": "amber", "label": "Reading"   },
-                    { "color": "green", "label": "Bio Squad" }
-                ],
-                "date": "Apr 17",
-                "hp": 40,
-                "done": false
-            },
-            {
-                "title": "Review lecture notes before exam",
-                "source": "personal",
-                "tags": [
-                    { "color": "amber", "label": "Self-study" }
-                ],
-                "date": "Apr 18",
-                "hp": 50,
-                "done": false
-            },
-            {
-                "title": "Attend Monday study hall",
-                "source": "system",
-                "tags": [
-                    { "color": "muted", "label": "Study Hall" }
-                ],
-                "date": "Apr 10",
-                "hp": 40,
-                "done": true
-            }
-        ]
-    },
-    "assignments": {
-        "pending": [
-            {
-                "title": "Calculus II — Problem Set 4",
-                "course": "MATH301 · Prof. Eriksen",
-                "source": "system",
-                "daysLeft": 2,
-                "daysLeftColor": "red",
-                "due": "Apr 13, 23:59",
-                "hp": 120
-            },
-            {
-                "title": "Algorithms — Lab Report 2",
-                "course": "CS Grind · Dr. Haugen",
-                "source": "system",
-                "daysLeft": 5,
-                "daysLeftColor": "amber",
-                "due": "Apr 16, 23:59",
-                "hp": 100
-            },
-            {
-                "title": "Linear Algebra — summary notes",
-                "course": "Personal",
-                "source": "personal",
-                "daysLeft": 9,
-                "daysLeftColor": "blue",
-                "due": "Apr 20",
-                "hp": 60
-            }
-        ],
-        "submitted": [
-            {
-                "title": "Calculus II — Problem Set 3",
-                "course": "MATH301 · Prof. Eriksen",
-                "source": "system",
-                "submitted": "Apr 6",
-                "hp": 120
-            }
-        ]
-    },
-    "groups": [
-        {
-            "id": "math",
-            "name": "MATH301",
-            "color": "#7c5cfc",
-            "isAdmin": true,
-            "subtitle": "Calculus II · Prof. Eriksen · 5 members",
-            "stats": { "avgHp": 616, "online": "3/5", "activeTasks": 2 },
-            "members": [
-                { "initials": "AL", "color": "#7c5cfc", "name": "Alex Larsen",  "isYou": true,  "role": "Admin · online now",    "roleColor": null, "hp": 742, "hpColor": "green", "status": "on"   },
-                { "initials": "SR", "color": "#1d9e75", "name": "Sara Røed",    "isYou": false, "role": "Online · 10m ago",       "roleColor": null, "hp": 910, "hpColor": "green", "status": "on"   },
-                { "initials": "TK", "color": "#185fa5", "name": "Tom Kjær",     "isYou": false, "role": "Away · 2h ago",          "roleColor": null, "hp": 450, "hpColor": "amber", "status": "away" },
-                { "initials": "MJ", "color": "#993556", "name": "Mia Johansen", "isYou": false, "role": "Critical HP · offline",  "roleColor": "red","hp": 210, "hpColor": "red",   "status": "off"  },
-                { "initials": "PO", "color": "#378add", "name": "Paul Olsen",   "isYou": false, "role": "Online · 30m ago",       "roleColor": null, "hp": 680, "hpColor": "green", "status": "on"   }
-            ],
-            "tasks": [
-                { "title": "Attend Thursday study hall session", "type": "Study Hall", "typeColor": "blue",   "date": "Apr 13", "hp": 40 },
-                { "title": "Join Friday group review session",   "type": "Social",     "typeColor": "purple", "date": "Apr 14", "hp": 60 }
-            ]
-        },
-        {
-            "id": "cs",
-            "name": "CS Grind",
-            "color": "#38bdf8",
-            "isAdmin": false,
-            "subtitle": "Algorithms · Dr. Haugen · 4 members",
-            "stats": { "avgHp": 446, "online": "2/4", "activeTasks": 1 },
-            "members": [
-                { "initials": "AL", "color": "#7c5cfc", "name": "Alex Larsen", "isYou": true,  "role": "Online now",            "roleColor": null, "hp": 742, "hpColor": "green", "status": "on"   },
-                { "initials": "LH", "color": "#854f0b", "name": "Lars Holm",   "isYou": false, "role": "Online · 5m ago",       "roleColor": null, "hp": 520, "hpColor": "amber", "status": "on"   },
-                { "initials": "EB", "color": "#3c3489", "name": "Emma Berg",   "isYou": false, "role": "Away · 3h ago",         "roleColor": null, "hp": 390, "hpColor": "amber", "status": "away" },
-                { "initials": "JN", "color": "#712b13", "name": "Jonas Nygård","isYou": false, "role": "Critical HP · offline", "roleColor": "red","hp": 130, "hpColor": "red",   "status": "off"  }
-            ],
-            "tasks": [
-                { "title": "Join Friday group review session", "type": "Social", "typeColor": "purple", "date": "Apr 14", "hp": 60 }
-            ]
-        },
-        {
-            "id": "bio",
-            "name": "Bio Squad",
-            "color": "#22d3a0",
-            "isAdmin": false,
-            "subtitle": "Cell Biology · Prof. Dahl · 3 members",
-            "stats": { "avgHp": 694, "online": "2/3", "activeTasks": 1 },
-            "members": [
-                { "initials": "AL", "color": "#7c5cfc", "name": "Alex Larsen", "isYou": true,  "role": "Online now",        "roleColor": null, "hp": 742, "hpColor": "green", "status": "on"  },
-                { "initials": "AK", "color": "#0f6e56", "name": "Astrid Kvam", "isYou": false, "role": "Online · 1m ago",   "roleColor": null, "hp": 860, "hpColor": "green", "status": "on"  },
-                { "initials": "HR", "color": "#633806", "name": "Henrik Rød",  "isYou": false, "role": "Offline · yesterday","roleColor": null, "hp": 480, "hpColor": "amber", "status": "off" }
-            ],
-            "tasks": [
-                { "title": "Read Ch. 7 — Organic Chemistry", "type": "Reading", "typeColor": "amber", "date": "Apr 17", "hp": 40 }
-            ]
-        }
+        "date": "Apr 17",
+        "hp": 40,
+        "done": false
+      },
+      {
+        "title": "Review lecture notes before exam",
+        "source": "personal",
+        "tags": [{ "color": "amber", "label": "Self-study" }],
+        "date": "Apr 18",
+        "hp": 50,
+        "done": false
+      },
+      {
+        "title": "Attend Monday study hall",
+        "source": "system",
+        "tags": [{ "color": "muted", "label": "Study Hall" }],
+        "date": "Apr 10",
+        "hp": 40,
+        "done": true
+      }
     ]
+  },
+  "assignments": {
+    "pending": [
+      {
+        "title": "Calculus II — Problem Set 4",
+        "course": "MATH301 · Prof. Eriksen",
+        "source": "system",
+        "daysLeft": 2,
+        "daysLeftColor": "red",
+        "due": "Apr 13, 23:59",
+        "hp": 120
+      },
+      {
+        "title": "Algorithms — Lab Report 2",
+        "course": "CS Grind · Dr. Haugen",
+        "source": "system",
+        "daysLeft": 5,
+        "daysLeftColor": "amber",
+        "due": "Apr 16, 23:59",
+        "hp": 100
+      },
+      {
+        "title": "Linear Algebra — summary notes",
+        "course": "Personal",
+        "source": "personal",
+        "daysLeft": 9,
+        "daysLeftColor": "blue",
+        "due": "Apr 20",
+        "hp": 60
+      }
+    ],
+    "submitted": [
+      {
+        "title": "Calculus II — Problem Set 3",
+        "course": "MATH301 · Prof. Eriksen",
+        "source": "system",
+        "submitted": "Apr 6",
+        "hp": 120
+      }
+    ]
+  },
+  "groups": [
+    {
+      "id": "math",
+      "name": "MATH301",
+      "color": "#7c5cfc",
+      "isAdmin": true,
+      "subtitle": "Calculus II · Prof. Eriksen · 5 members",
+      "stats": { "avgHp": 616, "online": "3/5", "activeTasks": 2 },
+      "members": [
+        {
+          "initials": "AL",
+          "color": "#7c5cfc",
+          "name": "Alex Larsen",
+          "isYou": true,
+          "role": "Admin · online now",
+          "roleColor": null,
+          "hp": 742,
+          "hpColor": "green",
+          "status": "on"
+        },
+        {
+          "initials": "SR",
+          "color": "#1d9e75",
+          "name": "Sara Røed",
+          "isYou": false,
+          "role": "Online · 10m ago",
+          "roleColor": null,
+          "hp": 910,
+          "hpColor": "green",
+          "status": "on"
+        },
+        {
+          "initials": "TK",
+          "color": "#185fa5",
+          "name": "Tom Kjær",
+          "isYou": false,
+          "role": "Away · 2h ago",
+          "roleColor": null,
+          "hp": 450,
+          "hpColor": "amber",
+          "status": "away"
+        },
+        {
+          "initials": "MJ",
+          "color": "#993556",
+          "name": "Mia Johansen",
+          "isYou": false,
+          "role": "Critical HP · offline",
+          "roleColor": "red",
+          "hp": 210,
+          "hpColor": "red",
+          "status": "off"
+        },
+        {
+          "initials": "PO",
+          "color": "#378add",
+          "name": "Paul Olsen",
+          "isYou": false,
+          "role": "Online · 30m ago",
+          "roleColor": null,
+          "hp": 680,
+          "hpColor": "green",
+          "status": "on"
+        }
+      ],
+      "tasks": [
+        {
+          "title": "Attend Thursday study hall session",
+          "type": "Study Hall",
+          "typeColor": "blue",
+          "date": "Apr 13",
+          "hp": 40
+        },
+        {
+          "title": "Join Friday group review session",
+          "type": "Social",
+          "typeColor": "purple",
+          "date": "Apr 14",
+          "hp": 60
+        }
+      ]
+    },
+    {
+      "id": "cs",
+      "name": "CS Grind",
+      "color": "#38bdf8",
+      "isAdmin": false,
+      "subtitle": "Algorithms · Dr. Haugen · 4 members",
+      "stats": { "avgHp": 446, "online": "2/4", "activeTasks": 1 },
+      "members": [
+        {
+          "initials": "AL",
+          "color": "#7c5cfc",
+          "name": "Alex Larsen",
+          "isYou": true,
+          "role": "Online now",
+          "roleColor": null,
+          "hp": 742,
+          "hpColor": "green",
+          "status": "on"
+        },
+        {
+          "initials": "LH",
+          "color": "#854f0b",
+          "name": "Lars Holm",
+          "isYou": false,
+          "role": "Online · 5m ago",
+          "roleColor": null,
+          "hp": 520,
+          "hpColor": "amber",
+          "status": "on"
+        },
+        {
+          "initials": "EB",
+          "color": "#3c3489",
+          "name": "Emma Berg",
+          "isYou": false,
+          "role": "Away · 3h ago",
+          "roleColor": null,
+          "hp": 390,
+          "hpColor": "amber",
+          "status": "away"
+        },
+        {
+          "initials": "JN",
+          "color": "#712b13",
+          "name": "Jonas Nygård",
+          "isYou": false,
+          "role": "Critical HP · offline",
+          "roleColor": "red",
+          "hp": 130,
+          "hpColor": "red",
+          "status": "off"
+        }
+      ],
+      "tasks": [
+        {
+          "title": "Join Friday group review session",
+          "type": "Social",
+          "typeColor": "purple",
+          "date": "Apr 14",
+          "hp": 60
+        }
+      ]
+    },
+    {
+      "id": "bio",
+      "name": "Bio Squad",
+      "color": "#22d3a0",
+      "isAdmin": false,
+      "subtitle": "Cell Biology · Prof. Dahl · 3 members",
+      "stats": { "avgHp": 694, "online": "2/3", "activeTasks": 1 },
+      "members": [
+        {
+          "initials": "AL",
+          "color": "#7c5cfc",
+          "name": "Alex Larsen",
+          "isYou": true,
+          "role": "Online now",
+          "roleColor": null,
+          "hp": 742,
+          "hpColor": "green",
+          "status": "on"
+        },
+        {
+          "initials": "AK",
+          "color": "#0f6e56",
+          "name": "Astrid Kvam",
+          "isYou": false,
+          "role": "Online · 1m ago",
+          "roleColor": null,
+          "hp": 860,
+          "hpColor": "green",
+          "status": "on"
+        },
+        {
+          "initials": "HR",
+          "color": "#633806",
+          "name": "Henrik Rød",
+          "isYou": false,
+          "role": "Offline · yesterday",
+          "roleColor": null,
+          "hp": 480,
+          "hpColor": "amber",
+          "status": "off"
+        }
+      ],
+      "tasks": [
+        {
+          "title": "Read Ch. 7 — Organic Chemistry",
+          "type": "Reading",
+          "typeColor": "amber",
+          "date": "Apr 17",
+          "hp": 40
+        }
+      ]
+    }
+  ]
 }
