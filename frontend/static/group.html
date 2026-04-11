@@ -1,6 +1,10 @@
 <html>
     <head>
-        <link rel="stylesheet" href="/style.css">
+        <link rel="stylesheet" href="/style.css" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
     </head>
     <body>
         <h2 class="sr-only">StudyHP — Group</h2>
@@ -8,7 +12,7 @@
         <div class="app">
             <div class="topbar">
                 <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-                <div class="logo">study<span>hp</span></div>
+                <div class="logo">grind<span>e</span>r</div>
                 <div class="topbar-right">
                     <div class="notif-dot"></div>
                     <div class="avatar-sm" id="topbar-initials">AL</div>
@@ -21,7 +25,7 @@
                     <span class="sicon">◈</span>Dashboard
                 </a>
                 <a class="sitem" href="/tasks">
-                    <span class="sicon">✓</span>My Tasks<span
+                    <span class="sicon">√</span>My Tasks<span
                         class="sbadge"
                         id="task-badge"
                         >3</span
@@ -76,10 +80,7 @@
                         <div class="sec-label">Group tasks</div>
                         <div class="card-list" id="group-tasks"></div>
                         <div style="margin-top: 8px" id="add-wrap">
-                            <button
-                                class="add-btn"
-                                onclick="showAdminForm()"
-                            >
+                            <button class="add-btn" onclick="showAdminForm()">
                                 <span class="plus">+</span>Add task for this
                                 group
                             </button>
@@ -158,9 +159,9 @@
         <div class="toast" id="toast"></div>
 
         <script>
-            const GROUP_ID = new URLSearchParams(
-                window.location.search,
-            ).get("id");
+            const GROUP_ID = new URLSearchParams(window.location.search).get(
+                "id",
+            );
 
             if (!GROUP_ID) window.location.href = "/";
 
@@ -194,9 +195,7 @@
             }
 
             function saveAdminTask() {
-                const title = document
-                    .getElementById("af-title")
-                    .value.trim();
+                const title = document.getElementById("af-title").value.trim();
                 const type = document.getElementById("af-type").value;
                 const due = document.getElementById("af-due").value;
                 const hp =
@@ -343,9 +342,8 @@
             fetch("/data.json")
                 .then((r) => r.json())
                 .then((data) => {
-                    document.getElementById(
-                        "topbar-initials",
-                    ).textContent = data.user.initials;
+                    document.getElementById("topbar-initials").textContent =
+                        data.user.initials;
                     document.getElementById("task-badge").textContent =
                         data.taskBadge;
                     document.getElementById("assign-badge").textContent =
@@ -375,8 +373,9 @@
 
                     document.getElementById("members-list").innerHTML =
                         g.members.map(renderMember).join("");
-                    document.getElementById("group-tasks").innerHTML =
-                        g.tasks.map((t) => renderTask(t, g.isAdmin)).join("");
+                    document.getElementById("group-tasks").innerHTML = g.tasks
+                        .map((t) => renderTask(t, g.isAdmin))
+                        .join("");
 
                     document.getElementById("form-title").textContent =
                         "New group task — " + g.name;

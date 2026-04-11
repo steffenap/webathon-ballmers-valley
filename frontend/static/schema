@@ -1,0 +1,24 @@
+/status:
+  - name: str
+  - health: int
+  - nextTick: int
+/group: list of group (id, name)s
+/group/<id>/name: group name
+/group/<id>/members: group member (id, name)s list
+/group/<id>/task: group task (id, name)s
+POST /group/<id>/task: create task
+very rest
+very demure
+
+/group/<id>/task/<id>/name: task name
+DELETE /group/<id>/task/<id>: delete task
+
+POST /group/<id>/invite: invite  [requires INVITE]
+
+POST /group: create group
+DELETE /group/<id>: delete group  [requires captcha]
+very human
+
+POST /login: log in
+- takes {"name": string, "password": password}
+- returns cookie

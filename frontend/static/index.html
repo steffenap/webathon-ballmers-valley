@@ -1,6 +1,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="/style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     </head>
     <body>
         <h2 class="sr-only">StudyHP — Dashboard</h2>
@@ -106,26 +107,10 @@
         ></div>
         <div class="toast" id="toast"></div>
 
+        <script src="utils.js"></script>
         <script>
             let hp = 0,
                 maxHp = 1000;
-
-            function toggleSidebar() {
-                document.getElementById("sidebar").classList.toggle("open");
-                document
-                    .getElementById("sidebar-overlay")
-                    .classList.toggle("open");
-            }
-
-            function showToast(msg) {
-                const t = document.getElementById("toast");
-                t.textContent = msg;
-                t.style.transform = "translateX(-50%) translateY(0)";
-                clearTimeout(t._t);
-                t._t = setTimeout(() => {
-                    t.style.transform = "translateX(-50%) translateY(60px)";
-                }, 2200);
-            }
 
             function updateHP(h) {
                 const pct = Math.round((h / maxHp) * 100);

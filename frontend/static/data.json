@@ -10,18 +10,28 @@
     },
     "taskBadge": 3,
     "assignBadge": 2,
-    "nextDeadline": {
+    "nextEvents": [
+      {
         "day": "13",
         "month": "Apr",
         "title": "Calculus II — Assignment 4",
         "sub": "Due 23:59 · MATH301",
         "reward": 120
-    },
-    "actions": [
-        { "icon": "📍", "iconClass": "ic-blue",   "label": "Study hall check-in",   "hp": 80  },
-        { "icon": "📄", "iconClass": "ic-green",  "label": "Submit assignment",      "hp": 120 },
-        { "icon": "👥", "iconClass": "ic-purple", "label": "Social study session",   "hp": 60  },
-        { "icon": "✦",  "iconClass": "ic-amber",  "label": "Complete a task",        "hp": 40  }
+      },
+      {
+        "day": "13",
+        "month": "Apr",
+        "title": "Calculus II — Assignment 4",
+        "sub": "Due 23:59 · MATH301",
+        "reward": 120
+      },
+      {
+        "day": "13",
+        "month": "Apr",
+        "title": "Calculus II — Assignment 4",
+        "sub": "Due 23:59 · MATH301",
+        "reward": 120
+      }
     ],
     "tasks": {
         "dueSoon": [

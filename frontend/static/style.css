@@ -4,6 +4,9 @@
     margin: 0;
     padding: 0;
 }
+html {
+    overflow: hidden;
+}
 :root {
     --bg: #0d0f14;
     --surface: #141720;
@@ -30,6 +33,7 @@ body {
     color: var(--text);
     font-family: var(--body);
     font-size: 14px;
+    touch-action: manipulation;
 }
 .app {
     display: grid;
@@ -862,7 +866,7 @@ body {
     position: absolute;
     bottom: 16px;
     left: 50%;
-    transform: translateX(-50%) translateY(60px);
+    transform: translateX(-50%) translateY(200px);
     background: var(--surface2);
     border: 1px solid var(--green);
     border-radius: 10px;
