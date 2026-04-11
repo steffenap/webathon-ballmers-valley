@@ -1,27 +1,46 @@
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 
 use axum::{
     Json, Router,
-    extract::{Path, State},
     routing::{delete, get, post},
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use sqlx::SqlitePool;
 use tokio::net::TcpListener;
+
+pub(crate) mod jwt;
+
+pub type UserId = u32;
 
 mod api {
     mod stupid_imports {
         pub(crate) use crate::AppState;
         pub(crate) use axum::{
-            Json, Router,
+            Json,
             extract::{Path, State},
-            routing::{delete, get, post},
         };
         pub(crate) use serde::Deserialize;
         pub(crate) use std::{collections::HashMap, sync::Arc};
     }
 
+    use axum_extra::extract::cookie;
+    use stupid_imports::*;
+
+    pub(crate) async fn cookies(cookie_jar: axum_extra::extract::CookieJar) -> Json<()> {
+        println!("All cookies:");
+        for cookie in cookie_jar.iter() {
+            println!("{cookie:?}");
+        }
+        Json(())
+    }
+
     pub(crate) mod user {
+        use std::time::{Instant, UNIX_EPOCH};
+
+        use axum_extra::extract::{CookieJar, cookie::Cookie};
+
+        use crate::{UserId, jwt::Authenticator};
+
         use super::stupid_imports::*;
         pub(crate) async fn groups(
             Path(user_id): Path<u32>,
@@ -35,10 +54,157 @@ mod api {
 
             Json(res.into_iter().map(|x| (x.id as u32, x.name)).collect())
         }
+
+        pub(crate) async fn whoami(
+            State(state): State<Arc<AppState>>,
+            jar: CookieJar,
+        ) -> Json<UserId> {
+            Json(state.auth.validate(&crate::jwt::Cookie::from_jar(&jar).unwrap()).unwrap())
+        }
+
+        #[derive(Deserialize)]
+        pub(crate) struct SignupData {
+            username: String,
+            fullname: String,
+            password: String,
+        }
+
+        pub(crate) async fn signup(
+            State(state): State<Arc<AppState>>,
+            jar: CookieJar,
+            Json(data): Json<SignupData>,
+        ) -> (CookieJar, Json<()>) {
+            let mut conn = state.db.acquire().await.unwrap();
+            let elapsed = UNIX_EPOCH.elapsed().unwrap().as_secs() as i64;
+            let rec = sqlx::query!(
+                "insert into users (username, password, full_name, health, health_last_tick) values (?1, ?2, ?3, ?4, ?5) returning id", data.username, data.password, data.fullname, 1000, elapsed
+            ).fetch_one(&mut *conn).await.unwrap();
+
+            let mut cookie = axum_extra::extract::cookie::Cookie::from(
+                state.auth.authenticate(rec.id as UserId),
+            );
+            cookie.set_path("/");
+            (jar.add(cookie), Json(()))
+        }
+
+        #[derive(Deserialize)]
+        pub(crate) struct SigninData {
+            username: String,
+            password: String,
+        }
+
+        #[axum::debug_handler]
+        pub(crate) async fn signin(
+            State(state): State<Arc<AppState>>,
+            jar: CookieJar,
+            Json(SigninData { username, password }): Json<SigninData>,
+        ) -> (CookieJar, Json<()>) {
+            let mut conn = state.db.acquire().await.unwrap();
+
+            let rec = sqlx::query!(
+                "select id from users where username = ?1 and password = ?2",
+                username,
+                password
+            )
+            .fetch_one(&mut *conn)
+            .await
+            .unwrap();
+
+            let mut cookie = axum_extra::extract::cookie::Cookie::from(
+                state.auth.authenticate(rec.id as UserId),
+            );
+            cookie.set_path("/");
+            (jar.add(cookie), Json(()))
+        }
     }
 
     pub(crate) mod group {
         use super::stupid_imports::*;
+
+        pub(crate) mod stuff {
+            use serde::Serialize;
+
+            use super::super::stupid_imports::*;
+            #[derive(Serialize)]
+            pub(crate) struct TaskData {
+                title: String,
+                r#type: Option<String>,
+                due: Option<u64>,
+                reward: u32,
+            }
+
+            impl TaskData {
+                fn new(
+                    title: String,
+                    r#type: Option<String>,
+                    due: Option<u64>,
+                    reward: u32,
+                ) -> Self {
+                    TaskData {
+                        title,
+                        r#type,
+                        due,
+                        reward,
+                    }
+                }
+            }
+            #[derive(Serialize)]
+            pub(crate) struct UserData {
+                name: String,
+            }
+            #[derive(Serialize)]
+            pub(crate) struct GroupData {
+                name: String,
+                admin_id: u32,
+                users: Vec<UserData>,
+                tasks: Vec<TaskData>,
+            }
+
+            #[axum::debug_handler]
+            pub(crate) async fn group_details(
+                Path(group_id): Path<u32>,
+                State(state): State<Arc<AppState>>,
+            ) -> Json<GroupData> {
+                let mut conn = state.db.acquire().await.unwrap();
+
+                let user_res = sqlx::query!("select users.id, username from users inner join user_group on users.id = user_group.user where user_group.gr = ?1",
+                    group_id
+                )
+                .fetch_all(&mut *conn)
+                .await.unwrap();
+
+                let task_res = sqlx::query!(
+                    "select title, type, due, reward from tasks where gr = ?1",
+                    group_id
+                )
+                .fetch_all(&mut *conn)
+                .await
+                .unwrap();
+
+                let group_data = sqlx::query!("select name from groups where id = ?1", group_id)
+                    .fetch_one(&mut *conn)
+                    .await
+                    .unwrap();
+
+                let tasks = task_res
+                    .into_iter()
+                    .map(|a| {
+                        TaskData::new(a.title, a.r#type, a.due.map(|x| x as u64), a.reward as u32)
+                    })
+                    .collect::<Vec<TaskData>>();
+                let users = user_res
+                    .into_iter()
+                    .map(|a| UserData { name: a.username })
+                    .collect::<Vec<UserData>>();
+
+                Json(GroupData {
+                    name: group_data.name,
+                    admin_id: 0,
+                    users,
+                    tasks,
+                })
+            }
+        }
 
         #[derive(Deserialize)]
         pub(crate) struct GroupInviteData {
@@ -116,13 +282,13 @@ mod api {
         ) -> Json<HashMap<u32, String>> {
             let mut conn = state.db.acquire().await.unwrap();
 
-            match sqlx::query!("select users.id, name from users inner join user_group on users.id = user_group.user where user_group.gr = ?1",
+            match sqlx::query!("select users.id, username from users inner join user_group on users.id = user_group.user where user_group.gr = ?1",
                 group_id
             )
             .fetch_all(&mut *conn)
             .await
             {
-                Ok(rec) => Json(rec.into_iter().map(|a| (a.id as u32, a.name)).collect()),
+                Ok(rec) => Json(rec.into_iter().map(|a| (a.id as u32, a.username)).collect()),
                 Err(e) => panic!("{e:?}"),
             }
         }
@@ -232,24 +398,16 @@ mod api {
     }
 }
 
-#[derive(Deserialize)]
-struct LoginData {
-    username: String,
-    password: String,
-}
-
-async fn login(Json(login_data): Json<LoginData>) -> Json<()> {
-    Json(())
-}
-
 struct AppState {
     db: SqlitePool,
+    auth: jwt::Authenticator,
 }
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {
     let db = SqlitePool::connect("db.db").await?;
-    let app_state = AppState { db };
+    let auth = jwt::Authenticator::new();
+    let app_state = AppState { db, auth };
 
     let static_routes = [
         ("/", "index.html"),
@@ -260,6 +418,7 @@ async fn main() -> anyhow::Result<()> {
         ("/group", "group.html"),
         ("/utils.js", "utils.js"),
         ("/images/grinder.png", "images/grinder.png"),
+        ("/register", "register.html"),
     ];
     let mut router = Router::new();
     for (path, real_path) in static_routes {
@@ -276,7 +435,7 @@ async fn main() -> anyhow::Result<()> {
         };
         router = router.route(
             path,
-            get(move || async move { ([("content-type", content_type)], data) }),
+            get(async move || ([("content-type", content_type)], data)),
         );
     }
 
@@ -284,15 +443,20 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/group/{group_id}/name", get(api::group::name))
         .route("/api/group/{group_id}/members", get(api::group::members))
         .route("/api/group/{group_id}/task", get(api::group::tasks))
-        .route("/api/group/{group_id}", delete(api::group::delete))
+        .route(
+            "/api/group/{group_id}",
+            delete(api::group::delete).get(api::group::stuff::group_details),
+        )
         .route("/api/group", post(api::group::create))
         .route("/api/group/{group_id}/invite", post(api::group::invite))
         .route("/api/user/{user_id}/groups", get(api::user::groups))
+        .route("/api/user/signup", post(api::user::signup))
+        .route("/api/user/whoami", get(api::user::whoami))
+        .route("/api/cookies", get(api::cookies))
+        .route("/api/user/signin", post(api::user::signin))
         .route("/api/task/{task_id}", delete(api::task::delete))
         .route("/api/task", post(api::task::create))
-        .route("/api/task/{task_id}/title", get(api::task::title))
-    // keep semicolon below
-    ;
+        .route("/api/task/{task_id}/title", get(api::task::title));
 
     let listener = TcpListener::bind("0.0.0.0:3000").await?;
     println!("Starting at http://0.0.0.0:3000");

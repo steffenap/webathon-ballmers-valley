@@ -1,7 +1,8 @@
+<!doctype html>
 <html>
     <head>
         <title>Grinder</title>
-        <link rel="icon" type="image/png" href="/images/grinder.png">
+        <link rel="icon" type="image/png" href="/images/grinder.png" />
         <link rel="stylesheet" href="/style.css" />
         <meta
             name="viewport"
@@ -14,7 +15,7 @@
         <div class="app">
             <div class="topbar">
                 <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-                <div class="logo">Grind<span>e</span>r</div>
+                <a href="/"><div class="logo">Grind<span>e</span>r</div></a>
                 <div class="topbar-right">
                     <div class="notif-dot"></div>
                     <div class="avatar-sm" id="topbar-initials">AL</div>
@@ -160,29 +161,14 @@
         ></div>
         <div class="toast" id="toast"></div>
 
+        <script src="utils.js"></script>
+
         <script>
             const GROUP_ID = new URLSearchParams(window.location.search).get(
                 "id",
             );
 
             if (!GROUP_ID) window.location.href = "/";
-
-            function toggleSidebar() {
-                document.getElementById("sidebar").classList.toggle("open");
-                document
-                    .getElementById("sidebar-overlay")
-                    .classList.toggle("open");
-            }
-
-            function showToast(msg) {
-                const t = document.getElementById("toast");
-                t.textContent = msg;
-                t.style.transform = "translateX(-50%) translateY(0)";
-                clearTimeout(t._t);
-                t._t = setTimeout(() => {
-                    t.style.transform = "translateX(-50%) translateY(60px)";
-                }, 2200);
-            }
 
             function showAdminForm() {
                 const f = document.getElementById("admin-form");
@@ -319,74 +305,61 @@
                 );
             }
 
-            function sidebarGroups(groups) {
-                return groups
-                    .map((g) => {
-                        const isActive = g.id === GROUP_ID;
-                        return (
-                            '<a class="sitem' +
-                            (isActive ? " active" : "") +
-                            '" href="/group?id=' +
-                            g.id +
-                            '"><div class="gpip" style="background: ' +
-                            g.color +
-                            '"></div>' +
-                            g.name +
-                            (g.isAdmin
-                                ? '<span class="sitem-admin">admin</span>'
-                                : "") +
-                            "</a>"
-                        );
-                    })
-                    .join("");
+            function to_initials(x) {
+              return "ABCDE";
             }
 
-            fetch("/data.json")
-                .then((r) => r.json())
-                .then((data) => {
-                    document.getElementById("topbar-initials").textContent =
-                        data.user.initials;
-                    document.getElementById("task-badge").textContent =
-                        data.taskBadge;
-                    document.getElementById("assign-badge").textContent =
-                        data.assignBadge;
+            async function setup() {
+              const USER_ID = await (await fetch(`/api/user/whoami`)).json();
+
+                  let user_data = await fetch(`/user/${USER_ID}`);
+                  document.querySelector("#topbar-initials").textContent = to_initials(user_data.full_name);
+
+                    // utestående tasks
+                    // document.getElementById("task-badge").textContent =
+                    //     data.taskBadge;
+                    // document.getElementById("assign-badge").textContent =
+                    //     data.assignBadge;
+
+                    let groups = await (await fetch(`/api/user/${USER_ID}/groups`)).json();
+                    let g = await (await fetch(`/api/group/${GROUP_ID}`)).json();
 
                     document.getElementById("sidebar-groups").innerHTML =
-                        sidebarGroups(data.groups);
+                        sidebarGroups(groups, GROUP_ID);
 
-                    const g = data.groups.find((g) => g.id === GROUP_ID);
-                    if (!g) {
-                        window.location.href = "/";
-                        return;
-                    }
+
+
+                    console.log(g);
 
                     document.getElementById("group-name").textContent = g.name;
                     document.getElementById("group-sub").innerHTML =
-                        g.subtitle +
-                        (g.isAdmin
+                        (g.admin_id == USER_ID
+                          // g.subtitle +
                             ? ' · <span style="color: var(--accent2)">you are admin</span>'
                             : "");
-                    document.getElementById("stat-avghp").textContent =
-                        g.stats.avgHp;
-                    document.getElementById("stat-online").textContent =
-                        g.stats.online;
-                    document.getElementById("stat-tasks").textContent =
-                        g.stats.activeTasks;
+                    // document.getElementById("stat-avghp").textContent =
+                    //     g.stats.avgHp;
+                    // document.getElementById("stat-online").textContent =
+                    //     100;
+                    // document.getElementById("stat-tasks").textContent =
+                    //     g.stats.activeTasks;
 
                     document.getElementById("members-list").innerHTML =
                         g.members.map(renderMember).join("");
                     document.getElementById("group-tasks").innerHTML = g.tasks
-                        .map((t) => renderTask(t, g.isAdmin))
+                        .map((t) => renderTask(t, g.admin_id == USER_ID))
                         .join("");
 
                     document.getElementById("form-title").textContent =
                         "New group task — " + g.name;
 
-                    if (!g.isAdmin) {
+                    if (!g.admin_id == USER_ID) {
                         document.getElementById("add-wrap").style.display =
                             "none";
                     }
-                });
+                }
+
+                setup();
         </script>
     </body>
 </html>

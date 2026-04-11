@@ -1,15 +1,21 @@
+<!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="/style.css">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Grinder</title>
+        <link rel="icon" type="image/png" href="/images/grinder.png" />
+        <link rel="stylesheet" href="/style.css" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
     </head>
     <body>
-        <h2 class="sr-only">StudyHP — Dashboard</h2>
+        <h2 class="sr-only">Grinder — Dashboard</h2>
 
         <div class="app">
             <div class="topbar">
                 <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-                <div class="logo">study<span>hp</span></div>
+                <a href="/"><div class="logo">Grind<span>e</span>r</div></a>
                 <div class="topbar-right">
                     <div class="notif-dot"></div>
                     <div class="avatar-sm" id="topbar-initials">AL</div>
@@ -54,7 +60,9 @@
                             <div class="avatar-lg" id="avatar-lg">AL</div>
                             <div>
                                 <div class="user-name" id="user-name">—</div>
-                                <div class="user-groups" id="user-groups">—</div>
+                                <div class="user-groups" id="user-groups">
+                                    —
+                                </div>
                             </div>
                         </div>
                         <div class="hp-card">
@@ -82,11 +90,15 @@
                         <div class="deadline-card">
                             <div class="deadline-date">
                                 <div class="deadline-day" id="dl-day">—</div>
-                                <div class="deadline-month" id="dl-month">—</div>
+                                <div class="deadline-month" id="dl-month">
+                                    —
+                                </div>
                             </div>
                             <div class="deadline-divider"></div>
                             <div class="deadline-body">
-                                <div class="deadline-title" id="dl-title">—</div>
+                                <div class="deadline-title" id="dl-title">
+                                    —
+                                </div>
                                 <div class="deadline-sub" id="dl-sub">—</div>
                             </div>
                             <div class="deadline-reward" id="dl-reward">—</div>
@@ -130,27 +142,14 @@
                 showToast("+" + amount + " HP — " + label);
             }
 
-            function sidebarGroups(groups) {
-                return groups
-                    .map(
-                        (g) =>
-                            '<a class="sitem" href="/group?id=' +
-                            g.id +
-                            '"><div class="gpip" style="background: ' +
-                            g.color +
-                            '"></div>' +
-                            g.name +
-                            (g.isAdmin
-                                ? '<span class="sitem-admin">admin</span>'
-                                : "") +
-                            "</a>",
-                    )
-                    .join("");
-            }
+            async function setup() {
 
-            fetch("/data.json")
-                .then((r) => r.json())
-                .then((data) => {
+              const USER_ID = await (await fetch(`/api/user/whoami`)).json();
+                    let groups = await (await fetch(`/api/user/${USER_ID}/groups`)).json();
+
+                    document.getElementById("sidebar-groups").innerHTML =
+                        sidebarGroups(groups, null);
+
                     const u = data.user;
                     hp = u.hp;
                     maxHp = u.maxHp;
@@ -182,9 +181,6 @@
                     document.getElementById("assign-badge").textContent =
                         data.assignBadge;
 
-                    document.getElementById("sidebar-groups").innerHTML =
-                        sidebarGroups(data.groups);
-
                     document.getElementById("actions-grid").innerHTML =
                         data.actions
                             .map(
@@ -206,7 +202,8 @@
                                     " HP</div></div></button>",
                             )
                             .join("");
-                });
+                }
+                setup();
         </script>
     </body>
 </html>
