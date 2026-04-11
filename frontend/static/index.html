@@ -3,41 +3,31 @@
         <link rel="stylesheet" href="/style.css">
     </head>
     <body>
-        <h2 class="sr-only">
-            StudyHP full app — dashboard, tasks, assignments, and group pages in
-            one shell
-        </h2>
+        <h2 class="sr-only">StudyHP — Dashboard</h2>
 
         <div class="app">
             <div class="topbar">
+                <button class="menu-btn" onclick="toggleSidebar()">☰</button>
                 <div class="logo">study<span>hp</span></div>
                 <div class="topbar-right">
                     <div class="notif-dot"></div>
-                    <div class="avatar-sm">AL</div>
+                    <div class="avatar-sm" id="topbar-initials">AL</div>
                 </div>
             </div>
 
-            <div class="sidebar">
+            <div class="sidebar" id="sidebar">
                 <div class="sidebar-label">Me</div>
-                <div
-                    class="sitem active"
-                    id="si-dashboard"
-                    onclick="nav('dashboard')"
-                >
+                <a class="sitem active" href="/">
                     <span class="sicon">◈</span>Dashboard
-                </div>
-                <div class="sitem" id="si-tasks" onclick="nav('tasks')">
+                </a>
+                <a class="sitem" href="/tasks">
                     <span class="sicon">✓</span>My Tasks<span
                         class="sbadge"
                         id="task-badge"
                         >3</span
                     >
-                </div>
-                <div
-                    class="sitem"
-                    id="si-assignments"
-                    onclick="nav('assignments')"
-                >
+                </a>
+                <a class="sitem" href="/assignments">
                     <span class="sicon">📄</span>Assignments<span
                         class="sbadge"
                         id="assign-badge"
@@ -47,37 +37,12 @@
                         "
                         >2</span
                     >
-                </div>
+                </a>
                 <div class="sidebar-label">Groups</div>
-                <div class="sitem" id="sg-math" onclick="nav('group-math')">
-                    <div class="gpip" style="background: #7c5cfc"></div>
-                    MATH301<span
-                        style="
-                            font-size: 10px;
-                            color: var(--accent2);
-                            margin-left: auto;
-                        "
-                        >admin</span
-                    >
-                </div>
-                <div class="sitem" id="sg-cs" onclick="nav('group-cs')">
-                    <div class="gpip" style="background: #38bdf8"></div>
-                    CS Grind
-                </div>
-                <div class="sitem" id="sg-bio" onclick="nav('group-bio')">
-                    <div class="gpip" style="background: #22d3a0"></div>
-                    Bio Squad
-                </div>
-                <div
-                    class="sitem"
-                    style="
-                        color: rgba(167, 139, 250, 0.6);
-                        border: 1px dashed rgba(167, 139, 250, 0.2);
-                        margin-top: 4px;
-                    "
-                >
+                <div id="sidebar-groups"></div>
+                <a class="sitem sitem-new">
                     <span class="sicon">+</span>New Group
-                </div>
+                </a>
             </div>
 
             <!-- DASHBOARD -->
@@ -85,1494 +50,71 @@
                 <div class="dash-main">
                     <div class="dash-col">
                         <div class="user-hero">
-                            <div class="avatar-lg">AL</div>
+                            <div class="avatar-lg" id="avatar-lg">AL</div>
                             <div>
-                                <div class="user-name">Alex Larsen</div>
-                                <div class="user-groups">
-                                    MATH301 · CS Grind · Bio Squad
-                                </div>
+                                <div class="user-name" id="user-name">—</div>
+                                <div class="user-groups" id="user-groups">—</div>
                             </div>
                         </div>
                         <div class="hp-card">
                             <div class="hp-top-row">
                                 <div class="hp-number" id="hp-val">
-                                    742 <span>/ 1000 HP</span>
+                                    — <span>/ — HP</span>
                                 </div>
                                 <div class="hp-decay">
                                     <div class="pulse-dot"></div>
-                                    <span>−18 HP / day</span>
+                                    <span id="hp-decay-text">— HP / day</span>
                                 </div>
                             </div>
                             <div class="bar-track">
                                 <div
-                                    class="bar-fill high"
+                                    class="bar-fill"
                                     id="hp-bar"
-                                    style="width: 74%"
+                                    style="width: 0%"
                                 ></div>
                             </div>
                             <div class="hp-footer">
-                                <span id="hp-pct">74%</span
-                                ><span>next tick in 6h 22m</span>
+                                <span id="hp-pct">—</span
+                                ><span id="hp-tick">—</span>
                             </div>
                         </div>
                         <div class="deadline-card">
-                            <div style="text-align: center; flex-shrink: 0">
-                                <div class="deadline-day">13</div>
-                                <div class="deadline-month">Apr</div>
+                            <div class="deadline-date">
+                                <div class="deadline-day" id="dl-day">—</div>
+                                <div class="deadline-month" id="dl-month">—</div>
                             </div>
                             <div class="deadline-divider"></div>
-                            <div style="flex: 1">
-                                <div class="deadline-title">
-                                    Calculus II — Assignment 4
-                                </div>
-                                <div class="deadline-sub">
-                                    Due 23:59 · MATH301
-                                </div>
+                            <div class="deadline-body">
+                                <div class="deadline-title" id="dl-title">—</div>
+                                <div class="deadline-sub" id="dl-sub">—</div>
                             </div>
-                            <div class="deadline-reward">+120 HP</div>
+                            <div class="deadline-reward" id="dl-reward">—</div>
                         </div>
                         <div>
                             <div class="sec-label">Actions</div>
-                            <div class="actions-grid">
-                                <button
-                                    class="action-btn"
-                                    onclick="gainHP(80, 'Study hall check-in')"
-                                >
-                                    <div class="action-icon ic-blue">📍</div>
-                                    <div>
-                                        <div class="action-label">
-                                            Study hall check-in
-                                        </div>
-                                        <div class="action-hp">+80 HP</div>
-                                    </div>
-                                </button>
-                                <button
-                                    class="action-btn"
-                                    onclick="
-                                        gainHP(120, 'Assignment submitted')
-                                    "
-                                >
-                                    <div class="action-icon ic-green">📄</div>
-                                    <div>
-                                        <div class="action-label">
-                                            Submit assignment
-                                        </div>
-                                        <div class="action-hp">+120 HP</div>
-                                    </div>
-                                </button>
-                                <button
-                                    class="action-btn"
-                                    onclick="
-                                        gainHP(60, 'Social study attended')
-                                    "
-                                >
-                                    <div class="action-icon ic-purple">👥</div>
-                                    <div>
-                                        <div class="action-label">
-                                            Social study session
-                                        </div>
-                                        <div class="action-hp">+60 HP</div>
-                                    </div>
-                                </button>
-                                <button
-                                    class="action-btn"
-                                    onclick="gainHP(40, 'Task completed')"
-                                >
-                                    <div class="action-icon ic-amber">✦</div>
-                                    <div>
-                                        <div class="action-label">
-                                            Complete a task
-                                        </div>
-                                        <div class="action-hp">+40 HP</div>
-                                    </div>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TASKS -->
-            <div class="page" id="page-tasks">
-                <div class="page-header">
-                    <div>
-                        <div class="page-title">My Tasks</div>
-                        <div class="page-sub">
-                            From system defaults, group admins, and your own
-                            assignments
-                        </div>
-                    </div>
-                </div>
-                <div class="content">
-                    <div
-                        style="
-                            display: flex;
-                            gap: 8px;
-                            flex-wrap: wrap;
-                            align-items: center;
-                        "
-                    >
-                        <div class="source-tag system">⬡ System</div>
-                        <span style="font-size: 11px; color: var(--muted)"
-                            >auto-generated</span
-                        >
-                        <div class="source-tag admin" style="margin-left: 10px">
-                            ◈ Admin
-                        </div>
-                        <span style="font-size: 11px; color: var(--muted)"
-                            >from group admins</span
-                        >
-                        <div
-                            class="source-tag personal"
-                            style="margin-left: 10px"
-                        >
-                            ✦ Personal
-                        </div>
-                        <span style="font-size: 11px; color: var(--muted)"
-                            >added by you</span
-                        >
-                    </div>
-                    <div>
-                        <div class="sec-label">Due soon</div>
-                        <div
-                            style="
-                                display: flex;
-                                flex-direction: column;
-                                gap: 7px;
-                            "
-                        >
-                            <div
-                                class="task-card"
-                                onclick="checkTask(this, 40)"
-                            >
-                                <div class="chk"></div>
-                                <div class="task-body">
-                                    <div class="task-title">
-                                        Attend Thursday study hall session
-                                    </div>
-                                    <div class="task-meta">
-                                        <div class="source-tag system">
-                                            ⬡ System
-                                        </div>
-                                        <span class="pill blue">Study Hall</span
-                                        ><span class="pill purple">MATH301</span
-                                        ><span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--muted);
-                                                font-family: var(--mono);
-                                            "
-                                            >Apr 13</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="task-hp">+40 HP</div>
-                            </div>
-                            <div
-                                class="task-card"
-                                onclick="checkTask(this, 80)"
-                            >
-                                <div class="chk"></div>
-                                <div class="task-body">
-                                    <div class="task-title">
-                                        Submit Calculus II problem set
-                                    </div>
-                                    <div class="task-meta">
-                                        <div class="source-tag system">
-                                            ⬡ System
-                                        </div>
-                                        <span class="pill green"
-                                            >Assignment</span
-                                        ><span class="pill purple">MATH301</span
-                                        ><span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--muted);
-                                                font-family: var(--mono);
-                                            "
-                                            >Apr 13</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="task-hp">+80 HP</div>
-                            </div>
-                            <div
-                                class="task-card"
-                                onclick="checkTask(this, 60)"
-                            >
-                                <div class="chk"></div>
-                                <div class="task-body">
-                                    <div class="task-title">
-                                        Join Friday group review session
-                                    </div>
-                                    <div class="task-meta">
-                                        <div class="source-tag admin">
-                                            ◈ Admin
-                                        </div>
-                                        <span class="pill purple">Social</span
-                                        ><span class="pill blue">CS Grind</span
-                                        ><span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--muted);
-                                                font-family: var(--mono);
-                                            "
-                                            >Apr 14</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="task-hp">+60 HP</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="sec-label">Upcoming</div>
-                        <div
-                            style="
-                                display: flex;
-                                flex-direction: column;
-                                gap: 7px;
-                            "
-                        >
-                            <div
-                                class="task-card"
-                                onclick="checkTask(this, 40)"
-                            >
-                                <div class="chk"></div>
-                                <div class="task-body">
-                                    <div class="task-title">
-                                        Read Ch. 7 — Organic Chemistry
-                                    </div>
-                                    <div class="task-meta">
-                                        <div class="source-tag admin">
-                                            ◈ Admin
-                                        </div>
-                                        <span class="pill amber">Reading</span
-                                        ><span class="pill green"
-                                            >Bio Squad</span
-                                        ><span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--muted);
-                                                font-family: var(--mono);
-                                            "
-                                            >Apr 17</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="task-hp">+40 HP</div>
-                            </div>
-                            <div
-                                class="task-card"
-                                onclick="checkTask(this, 50)"
-                            >
-                                <div class="chk"></div>
-                                <div class="task-body">
-                                    <div class="task-title">
-                                        Review lecture notes before exam
-                                    </div>
-                                    <div class="task-meta">
-                                        <div class="source-tag personal">
-                                            ✦ Personal
-                                        </div>
-                                        <span class="pill amber"
-                                            >Self-study</span
-                                        ><span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--muted);
-                                                font-family: var(--mono);
-                                            "
-                                            >Apr 18</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="task-hp">+50 HP</div>
-                            </div>
-                            <div class="task-card done">
-                                <div class="chk on"></div>
-                                <div class="task-body">
-                                    <div
-                                        class="task-title"
-                                        style="text-decoration: line-through"
-                                    >
-                                        Attend Monday study hall
-                                    </div>
-                                    <div class="task-meta">
-                                        <div class="source-tag system">
-                                            ⬡ System
-                                        </div>
-                                        <span class="pill muted"
-                                            >Study Hall</span
-                                        ><span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--faint);
-                                                font-family: var(--mono);
-                                            "
-                                            >Apr 10</span
-                                        >
-                                    </div>
-                                </div>
-                                <div
-                                    class="task-hp"
-                                    style="color: var(--muted)"
-                                >
-                                    +40 HP
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ASSIGNMENTS -->
-            <div class="page" id="page-assignments">
-                <div class="page-header">
-                    <div>
-                        <div class="page-title">Assignments</div>
-                        <div class="page-sub">
-                            System-tracked and personal deadlines
-                        </div>
-                    </div>
-                    <button
-                        class="btn primary"
-                        style="flex-shrink: 0; margin-top: 4px"
-                        onclick="toggleAddForm()"
-                    >
-                        + Add assignment
-                    </button>
-                </div>
-                <div class="content">
-                    <div class="form-panel" id="add-form" style="display: none">
-                        <div class="form-title">New assignment</div>
-                        <div class="form-row">
-                            <div class="form-label">Title</div>
-                            <input
-                                class="form-input"
-                                id="new-title"
-                                placeholder="e.g. Linear Algebra — Problem Set 5"
-                            />
-                        </div>
-                        <div class="form-row-split">
-                            <div class="form-row">
-                                <div class="form-label">Course / group</div>
-                                <input
-                                    class="form-input"
-                                    id="new-course"
-                                    placeholder="e.g. MATH301"
-                                />
-                            </div>
-                            <div class="form-row">
-                                <div class="form-label">Due date</div>
-                                <input
-                                    class="form-input"
-                                    id="new-due"
-                                    type="date"
-                                    style="color-scheme: dark"
-                                />
-                            </div>
-                        </div>
-                        <div class="form-row-split">
-                            <div class="form-row">
-                                <div class="form-label">HP reward</div>
-                                <input
-                                    class="form-input"
-                                    id="new-hp"
-                                    type="number"
-                                    placeholder="e.g. 100"
-                                    min="0"
-                                    max="200"
-                                />
-                            </div>
-                            <div class="form-row">
-                                <div class="form-label">Priority</div>
-                                <select class="form-input" id="new-priority">
-                                    <option value="high">
-                                        High — due soon
-                                    </option>
-                                    <option value="mid" selected>Medium</option>
-                                    <option value="low">
-                                        Low — plenty of time
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button class="btn ghost" onclick="toggleAddForm()">
-                                Cancel</button
-                            ><button
-                                class="btn primary"
-                                onclick="addAssignment()"
-                            >
-                                Save assignment
-                            </button>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="sec-label">Pending</div>
-                        <div
-                            id="pending-list"
-                            style="
-                                display: flex;
-                                flex-direction: column;
-                                gap: 7px;
-                            "
-                        >
-                            <div class="assign-card">
-                                <div class="assign-top">
-                                    <div>
-                                        <div class="assign-title">
-                                            Calculus II — Problem Set 4
-                                        </div>
-                                        <div class="assign-course">
-                                            MATH301 · Prof. Eriksen
-                                        </div>
-                                    </div>
-                                    <div
-                                        style="
-                                            display: flex;
-                                            align-items: center;
-                                            gap: 6px;
-                                            flex-shrink: 0;
-                                        "
-                                    >
-                                        <div class="source-tag system">
-                                            ⬡ System
-                                        </div>
-                                        <span class="pill red"
-                                            >2 days left</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="assign-footer">
-                                    <div class="assign-due">
-                                        Due <span>Apr 13, 23:59</span>
-                                    </div>
-                                    <div class="assign-hp-val">+120 HP</div>
-                                    <button
-                                        class="btn"
-                                        onclick="submitAssign(this)"
-                                    >
-                                        Submit
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="assign-card">
-                                <div class="assign-top">
-                                    <div>
-                                        <div class="assign-title">
-                                            Algorithms — Lab Report 2
-                                        </div>
-                                        <div class="assign-course">
-                                            CS Grind · Dr. Haugen
-                                        </div>
-                                    </div>
-                                    <div
-                                        style="
-                                            display: flex;
-                                            align-items: center;
-                                            gap: 6px;
-                                            flex-shrink: 0;
-                                        "
-                                    >
-                                        <div class="source-tag system">
-                                            ⬡ System
-                                        </div>
-                                        <span class="pill amber"
-                                            >5 days left</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="assign-footer">
-                                    <div class="assign-due">
-                                        Due <span>Apr 16, 23:59</span>
-                                    </div>
-                                    <div class="assign-hp-val">+100 HP</div>
-                                    <button
-                                        class="btn"
-                                        onclick="submitAssign(this)"
-                                    >
-                                        Submit
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="assign-card">
-                                <div class="assign-top">
-                                    <div>
-                                        <div class="assign-title">
-                                            Linear Algebra — summary notes
-                                        </div>
-                                        <div class="assign-course">
-                                            Personal
-                                        </div>
-                                    </div>
-                                    <div
-                                        style="
-                                            display: flex;
-                                            align-items: center;
-                                            gap: 6px;
-                                            flex-shrink: 0;
-                                        "
-                                    >
-                                        <div class="source-tag personal">
-                                            ✦ Personal
-                                        </div>
-                                        <span class="pill blue"
-                                            >9 days left</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="assign-footer">
-                                    <div class="assign-due">
-                                        Due <span>Apr 20</span>
-                                    </div>
-                                    <div class="assign-hp-val">+60 HP</div>
-                                    <button
-                                        class="btn"
-                                        onclick="submitAssign(this)"
-                                    >
-                                        Done
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="sec-label">Submitted</div>
-                        <div
-                            style="
-                                display: flex;
-                                flex-direction: column;
-                                gap: 7px;
-                                opacity: 0.45;
-                            "
-                        >
-                            <div class="assign-card">
-                                <div class="assign-top">
-                                    <div>
-                                        <div class="assign-title">
-                                            Calculus II — Problem Set 3
-                                        </div>
-                                        <div class="assign-course">
-                                            MATH301 · Prof. Eriksen
-                                        </div>
-                                    </div>
-                                    <div
-                                        style="
-                                            display: flex;
-                                            align-items: center;
-                                            gap: 6px;
-                                        "
-                                    >
-                                        <div class="source-tag system">
-                                            ⬡ System
-                                        </div>
-                                        <span class="pill green"
-                                            >Submitted</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="assign-footer">
-                                    <div class="assign-due">
-                                        Submitted <span>Apr 6</span>
-                                    </div>
-                                    <div
-                                        class="assign-hp-val"
-                                        style="color: var(--muted)"
-                                    >
-                                        +120 HP
-                                    </div>
-                                    <button class="btn done">Done</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GROUP MATH301 (admin) -->
-            <div class="page" id="page-group-math">
-                <div class="page-header">
-                    <div>
-                        <div class="page-title">MATH301</div>
-                        <div class="page-sub">
-                            Calculus II · Prof. Eriksen · 5 members ·
-                            <span style="color: var(--accent2)"
-                                >you are admin</span
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div class="content">
-                    <div class="group-stat-row">
-                        <div class="gstat">
-                            <div class="gstat-val">616</div>
-                            <div class="gstat-label">avg HP</div>
-                        </div>
-                        <div class="gstat">
-                            <div class="gstat-val">3/5</div>
-                            <div class="gstat-label">online</div>
-                        </div>
-                        <div class="gstat">
-                            <div class="gstat-val">2</div>
-                            <div class="gstat-label">active tasks</div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="sec-label">Members</div>
-                        <div
-                            style="
-                                display: flex;
-                                flex-direction: column;
-                                gap: 7px;
-                            "
-                        >
-                            <div class="member-card">
-                                <div
-                                    class="m-av"
-                                    style="background: var(--accent)"
-                                >
-                                    AL
-                                </div>
-                                <div class="m-info">
-                                    <div class="m-name">
-                                        Alex Larsen
-                                        <span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--muted);
-                                                font-weight: 400;
-                                            "
-                                            >(you)</span
-                                        >
-                                    </div>
-                                    <div class="m-sub">Admin · online now</div>
-                                </div>
-                                <div class="m-hp">
-                                    <div
-                                        class="m-hp-val"
-                                        style="color: var(--green)"
-                                    >
-                                        742
-                                    </div>
-                                    <div class="m-bar">
-                                        <div
-                                            class="m-bar-fill"
-                                            style="
-                                                width: 74%;
-                                                background: var(--green);
-                                            "
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div class="spip on"></div>
-                            </div>
-                            <div class="member-card">
-                                <div class="m-av" style="background: #1d9e75">
-                                    SR
-                                </div>
-                                <div class="m-info">
-                                    <div class="m-name">Sara Røed</div>
-                                    <div class="m-sub">Online · 10m ago</div>
-                                </div>
-                                <div class="m-hp">
-                                    <div
-                                        class="m-hp-val"
-                                        style="color: var(--green)"
-                                    >
-                                        910
-                                    </div>
-                                    <div class="m-bar">
-                                        <div
-                                            class="m-bar-fill"
-                                            style="
-                                                width: 91%;
-                                                background: var(--green);
-                                            "
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div class="spip on"></div>
-                            </div>
-                            <div class="member-card">
-                                <div class="m-av" style="background: #185fa5">
-                                    TK
-                                </div>
-                                <div class="m-info">
-                                    <div class="m-name">Tom Kjær</div>
-                                    <div class="m-sub">Away · 2h ago</div>
-                                </div>
-                                <div class="m-hp">
-                                    <div
-                                        class="m-hp-val"
-                                        style="color: var(--amber)"
-                                    >
-                                        450
-                                    </div>
-                                    <div class="m-bar">
-                                        <div
-                                            class="m-bar-fill"
-                                            style="
-                                                width: 45%;
-                                                background: var(--amber);
-                                            "
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div class="spip away"></div>
-                            </div>
-                            <div class="member-card">
-                                <div class="m-av" style="background: #993556">
-                                    MJ
-                                </div>
-                                <div class="m-info">
-                                    <div class="m-name">Mia Johansen</div>
-                                    <div
-                                        class="m-sub"
-                                        style="color: var(--red)"
-                                    >
-                                        Critical HP · offline
-                                    </div>
-                                </div>
-                                <div class="m-hp">
-                                    <div
-                                        class="m-hp-val"
-                                        style="color: var(--red)"
-                                    >
-                                        210
-                                    </div>
-                                    <div class="m-bar">
-                                        <div
-                                            class="m-bar-fill"
-                                            style="
-                                                width: 21%;
-                                                background: var(--red);
-                                            "
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div class="spip off"></div>
-                            </div>
-                            <div class="member-card">
-                                <div class="m-av" style="background: #378add">
-                                    PO
-                                </div>
-                                <div class="m-info">
-                                    <div class="m-name">Paul Olsen</div>
-                                    <div class="m-sub">Online · 30m ago</div>
-                                </div>
-                                <div class="m-hp">
-                                    <div
-                                        class="m-hp-val"
-                                        style="color: var(--green)"
-                                    >
-                                        680
-                                    </div>
-                                    <div class="m-bar">
-                                        <div
-                                            class="m-bar-fill"
-                                            style="
-                                                width: 68%;
-                                                background: var(--green);
-                                            "
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div class="spip on"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="sec-label">Group tasks</div>
-                        <div
-                            style="
-                                display: flex;
-                                flex-direction: column;
-                                gap: 7px;
-                            "
-                            id="math-tasks"
-                        >
-                            <div class="admin-task-card">
-                                <div class="admin-task-info">
-                                    <div class="admin-task-title">
-                                        Attend Thursday study hall session
-                                    </div>
-                                    <div class="admin-task-meta">
-                                        <span class="pill blue">Study Hall</span
-                                        ><span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--muted);
-                                                font-family: var(--mono);
-                                            "
-                                            >Apr 13</span
-                                        ><span class="pill green">+40 HP</span>
-                                    </div>
-                                </div>
-                                <button
-                                    class="btn ghost"
-                                    style="
-                                        font-size: 11px;
-                                        padding: 5px 10px;
-                                        flex-shrink: 0;
-                                    "
-                                    onclick="
-                                        this.closest(
-                                            '.admin-task-card',
-                                        ).remove();
-                                        showToast('Task removed');
-                                    "
-                                >
-                                    Remove
-                                </button>
-                            </div>
-                            <div class="admin-task-card">
-                                <div class="admin-task-info">
-                                    <div class="admin-task-title">
-                                        Join Friday group review session
-                                    </div>
-                                    <div class="admin-task-meta">
-                                        <span class="pill purple">Social</span
-                                        ><span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--muted);
-                                                font-family: var(--mono);
-                                            "
-                                            >Apr 14</span
-                                        ><span class="pill green">+60 HP</span>
-                                    </div>
-                                </div>
-                                <button
-                                    class="btn ghost"
-                                    style="
-                                        font-size: 11px;
-                                        padding: 5px 10px;
-                                        flex-shrink: 0;
-                                    "
-                                    onclick="
-                                        this.closest(
-                                            '.admin-task-card',
-                                        ).remove();
-                                        showToast('Task removed');
-                                    "
-                                >
-                                    Remove
-                                </button>
-                            </div>
-                        </div>
-                        <div style="margin-top: 8px" id="math-add-wrap">
-                            <button
-                                class="add-btn"
-                                onclick="showAdminForm('math')"
-                            >
-                                <span class="plus">+</span>Add task for this
-                                group
-                            </button>
-                        </div>
-                        <div
-                            class="form-panel"
-                            id="admin-form-math"
-                            style="display: none; margin-top: 8px"
-                        >
-                            <div class="form-title">
-                                New group task — MATH301
-                            </div>
-                            <div class="form-row">
-                                <div class="form-label">Task title</div>
-                                <input
-                                    class="form-input"
-                                    id="af-math-title"
-                                    placeholder="e.g. Read chapter 9"
-                                />
-                            </div>
-                            <div class="form-row-split">
-                                <div class="form-row">
-                                    <div class="form-label">Type</div>
-                                    <select
-                                        class="form-input"
-                                        id="af-math-type"
-                                    >
-                                        <option>Study Hall</option>
-                                        <option>Social</option>
-                                        <option>Reading</option>
-                                        <option>Assignment</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-label">Due date</div>
-                                    <input
-                                        class="form-input"
-                                        id="af-math-due"
-                                        type="date"
-                                        style="color-scheme: dark"
-                                    />
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-label">HP reward</div>
-                                <input
-                                    class="form-input"
-                                    id="af-math-hp"
-                                    type="number"
-                                    placeholder="e.g. 50"
-                                    min="0"
-                                    max="200"
-                                />
-                            </div>
-                            <div class="form-actions">
-                                <button
-                                    class="btn ghost"
-                                    onclick="hideAdminForm('math')"
-                                >
-                                    Cancel</button
-                                ><button
-                                    class="btn primary"
-                                    onclick="saveAdminTask('math')"
-                                >
-                                    Assign to group
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GROUP CS GRIND -->
-            <div class="page" id="page-group-cs">
-                <div class="page-header">
-                    <div>
-                        <div class="page-title">CS Grind</div>
-                        <div class="page-sub">
-                            Algorithms · Dr. Haugen · 4 members
-                        </div>
-                    </div>
-                </div>
-                <div class="content">
-                    <div class="group-stat-row">
-                        <div class="gstat">
-                            <div class="gstat-val">446</div>
-                            <div class="gstat-label">avg HP</div>
-                        </div>
-                        <div class="gstat">
-                            <div class="gstat-val">2/4</div>
-                            <div class="gstat-label">online</div>
-                        </div>
-                        <div class="gstat">
-                            <div class="gstat-val">1</div>
-                            <div class="gstat-label">active tasks</div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="sec-label">Members</div>
-                        <div
-                            style="
-                                display: flex;
-                                flex-direction: column;
-                                gap: 7px;
-                            "
-                        >
-                            <div class="member-card">
-                                <div
-                                    class="m-av"
-                                    style="background: var(--accent)"
-                                >
-                                    AL
-                                </div>
-                                <div class="m-info">
-                                    <div class="m-name">
-                                        Alex Larsen
-                                        <span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--muted);
-                                                font-weight: 400;
-                                            "
-                                            >(you)</span
-                                        >
-                                    </div>
-                                    <div class="m-sub">Online now</div>
-                                </div>
-                                <div class="m-hp">
-                                    <div
-                                        class="m-hp-val"
-                                        style="color: var(--green)"
-                                    >
-                                        742
-                                    </div>
-                                    <div class="m-bar">
-                                        <div
-                                            class="m-bar-fill"
-                                            style="
-                                                width: 74%;
-                                                background: var(--green);
-                                            "
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div class="spip on"></div>
-                            </div>
-                            <div class="member-card">
-                                <div class="m-av" style="background: #854f0b">
-                                    LH
-                                </div>
-                                <div class="m-info">
-                                    <div class="m-name">Lars Holm</div>
-                                    <div class="m-sub">Online · 5m ago</div>
-                                </div>
-                                <div class="m-hp">
-                                    <div
-                                        class="m-hp-val"
-                                        style="color: var(--amber)"
-                                    >
-                                        520
-                                    </div>
-                                    <div class="m-bar">
-                                        <div
-                                            class="m-bar-fill"
-                                            style="
-                                                width: 52%;
-                                                background: var(--amber);
-                                            "
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div class="spip on"></div>
-                            </div>
-                            <div class="member-card">
-                                <div class="m-av" style="background: #3c3489">
-                                    EB
-                                </div>
-                                <div class="m-info">
-                                    <div class="m-name">Emma Berg</div>
-                                    <div class="m-sub">Away · 3h ago</div>
-                                </div>
-                                <div class="m-hp">
-                                    <div
-                                        class="m-hp-val"
-                                        style="color: var(--amber)"
-                                    >
-                                        390
-                                    </div>
-                                    <div class="m-bar">
-                                        <div
-                                            class="m-bar-fill"
-                                            style="
-                                                width: 39%;
-                                                background: var(--amber);
-                                            "
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div class="spip away"></div>
-                            </div>
-                            <div class="member-card">
-                                <div class="m-av" style="background: #712b13">
-                                    JN
-                                </div>
-                                <div class="m-info">
-                                    <div class="m-name">Jonas Nygård</div>
-                                    <div
-                                        class="m-sub"
-                                        style="color: var(--red)"
-                                    >
-                                        Critical HP · offline
-                                    </div>
-                                </div>
-                                <div class="m-hp">
-                                    <div
-                                        class="m-hp-val"
-                                        style="color: var(--red)"
-                                    >
-                                        130
-                                    </div>
-                                    <div class="m-bar">
-                                        <div
-                                            class="m-bar-fill"
-                                            style="
-                                                width: 13%;
-                                                background: var(--red);
-                                            "
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div class="spip off"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="sec-label">Group tasks</div>
-                        <div
-                            style="
-                                display: flex;
-                                flex-direction: column;
-                                gap: 7px;
-                            "
-                        >
-                            <div class="admin-task-card">
-                                <div class="admin-task-info">
-                                    <div class="admin-task-title">
-                                        Join Friday group review session
-                                    </div>
-                                    <div class="admin-task-meta">
-                                        <span class="pill purple">Social</span
-                                        ><span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--muted);
-                                                font-family: var(--mono);
-                                            "
-                                            >Apr 14</span
-                                        ><span class="pill green">+60 HP</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GROUP BIO SQUAD -->
-            <div class="page" id="page-group-bio">
-                <div class="page-header">
-                    <div>
-                        <div class="page-title">Bio Squad</div>
-                        <div class="page-sub">
-                            Cell Biology · Prof. Dahl · 3 members
-                        </div>
-                    </div>
-                </div>
-                <div class="content">
-                    <div class="group-stat-row">
-                        <div class="gstat">
-                            <div class="gstat-val">694</div>
-                            <div class="gstat-label">avg HP</div>
-                        </div>
-                        <div class="gstat">
-                            <div class="gstat-val">2/3</div>
-                            <div class="gstat-label">online</div>
-                        </div>
-                        <div class="gstat">
-                            <div class="gstat-val">1</div>
-                            <div class="gstat-label">active tasks</div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="sec-label">Members</div>
-                        <div
-                            style="
-                                display: flex;
-                                flex-direction: column;
-                                gap: 7px;
-                            "
-                        >
-                            <div class="member-card">
-                                <div
-                                    class="m-av"
-                                    style="background: var(--accent)"
-                                >
-                                    AL
-                                </div>
-                                <div class="m-info">
-                                    <div class="m-name">
-                                        Alex Larsen
-                                        <span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--muted);
-                                                font-weight: 400;
-                                            "
-                                            >(you)</span
-                                        >
-                                    </div>
-                                    <div class="m-sub">Online now</div>
-                                </div>
-                                <div class="m-hp">
-                                    <div
-                                        class="m-hp-val"
-                                        style="color: var(--green)"
-                                    >
-                                        742
-                                    </div>
-                                    <div class="m-bar">
-                                        <div
-                                            class="m-bar-fill"
-                                            style="
-                                                width: 74%;
-                                                background: var(--green);
-                                            "
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div class="spip on"></div>
-                            </div>
-                            <div class="member-card">
-                                <div class="m-av" style="background: #0f6e56">
-                                    AK
-                                </div>
-                                <div class="m-info">
-                                    <div class="m-name">Astrid Kvam</div>
-                                    <div class="m-sub">Online · 1m ago</div>
-                                </div>
-                                <div class="m-hp">
-                                    <div
-                                        class="m-hp-val"
-                                        style="color: var(--green)"
-                                    >
-                                        860
-                                    </div>
-                                    <div class="m-bar">
-                                        <div
-                                            class="m-bar-fill"
-                                            style="
-                                                width: 86%;
-                                                background: var(--green);
-                                            "
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div class="spip on"></div>
-                            </div>
-                            <div class="member-card">
-                                <div class="m-av" style="background: #633806">
-                                    HR
-                                </div>
-                                <div class="m-info">
-                                    <div class="m-name">Henrik Rød</div>
-                                    <div class="m-sub">Offline · yesterday</div>
-                                </div>
-                                <div class="m-hp">
-                                    <div
-                                        class="m-hp-val"
-                                        style="color: var(--amber)"
-                                    >
-                                        480
-                                    </div>
-                                    <div class="m-bar">
-                                        <div
-                                            class="m-bar-fill"
-                                            style="
-                                                width: 48%;
-                                                background: var(--amber);
-                                            "
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div class="spip off"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="sec-label">Group tasks</div>
-                        <div
-                            style="
-                                display: flex;
-                                flex-direction: column;
-                                gap: 7px;
-                            "
-                        >
-                            <div class="admin-task-card">
-                                <div class="admin-task-info">
-                                    <div class="admin-task-title">
-                                        Read Ch. 7 — Organic Chemistry
-                                    </div>
-                                    <div class="admin-task-meta">
-                                        <span class="pill amber">Reading</span
-                                        ><span
-                                            style="
-                                                font-size: 11px;
-                                                color: var(--muted);
-                                                font-family: var(--mono);
-                                            "
-                                            >Apr 17</span
-                                        ><span class="pill green">+40 HP</span>
-                                    </div>
-                                </div>
-                            </div>
+                            <div class="actions-grid" id="actions-grid"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <div
+            class="sidebar-overlay"
+            id="sidebar-overlay"
+            onclick="toggleSidebar()"
+        ></div>
         <div class="toast" id="toast"></div>
 
         <script>
-            let hp = 742,
-                maxHp = 1000,
-                taskBadge = 3,
-                assignBadge = 2;
+            let hp = 0,
+                maxHp = 1000;
 
-            function nav(page) {
+            function toggleSidebar() {
+                document.getElementById("sidebar").classList.toggle("open");
                 document
-                    .querySelectorAll(".page")
-                    .forEach((p) => p.classList.remove("active"));
-                document
-                    .querySelectorAll(".sitem")
-                    .forEach((i) => i.classList.remove("active"));
-                document.getElementById("page-" + page).classList.add("active");
-                const si =
-                    document.getElementById("si-" + page) ||
-                    document.getElementById("sg-" + page.replace("group-", ""));
-                if (si) si.classList.add("active");
-            }
-
-            function gainHP(amount, label) {
-                hp = Math.min(maxHp, hp + amount);
-                const pct = Math.round((hp / maxHp) * 100);
-                document.getElementById("hp-val").innerHTML =
-                    hp + " <span>/ " + maxHp + " HP</span>";
-                document.getElementById("hp-pct").textContent = pct + "%";
-                const bar = document.getElementById("hp-bar");
-                bar.style.width = pct + "%";
-                bar.className =
-                    "bar-fill " +
-                    (pct > 60 ? "high" : pct > 30 ? "mid" : "low");
-                showToast("+" + amount + " HP — " + label);
-            }
-
-            function checkTask(card, amount) {
-                if (card.classList.contains("done")) return;
-                card.querySelector(".chk").classList.add("on");
-                card.querySelector(".task-title").style.textDecoration =
-                    "line-through";
-                card.classList.add("done");
-                taskBadge = Math.max(0, taskBadge - 1);
-                const b = document.getElementById("task-badge");
-                b.textContent = taskBadge;
-                if (taskBadge === 0) b.style.display = "none";
-                gainHP(amount, "Task completed");
-            }
-
-            function submitAssign(btn) {
-                if (btn.classList.contains("done")) return;
-                btn.classList.add("done");
-                btn.textContent = "Done";
-                btn.closest(".assign-card").style.opacity = "0.45";
-                assignBadge = Math.max(0, assignBadge - 1);
-                const b = document.getElementById("assign-badge");
-                b.textContent = assignBadge;
-                if (assignBadge === 0) b.style.display = "none";
-                showToast("Submitted — HP earned");
-            }
-
-            let formOpen = false;
-            function toggleAddForm() {
-                formOpen = !formOpen;
-                const f = document.getElementById("add-form");
-                f.style.display = formOpen ? "flex" : "none";
-                if (formOpen) f.style.flexDirection = "column";
-            }
-
-            function addAssignment() {
-                const title = document.getElementById("new-title").value.trim();
-                const course =
-                    document.getElementById("new-course").value.trim() ||
-                    "Personal";
-                const due = document.getElementById("new-due").value;
-                const hp2 =
-                    parseInt(document.getElementById("new-hp").value) || 60;
-                const priority = document.getElementById("new-priority").value;
-                if (!title) {
-                    showToast("Please enter a title");
-                    return;
-                }
-                const pillMap = { high: "red", mid: "amber", low: "blue" };
-                const labelMap = {
-                    high: "High priority",
-                    mid: "Medium",
-                    low: "Low priority",
-                };
-                const dueStr = due
-                    ? new Date(due).toLocaleDateString("en-GB", {
-                          day: "numeric",
-                          month: "short",
-                      })
-                    : "No date";
-                const card = document.createElement("div");
-                card.className = "assign-card";
-                card.innerHTML =
-                    '<div class="assign-top"><div><div class="assign-title">' +
-                    title +
-                    '</div><div class="assign-course">' +
-                    course +
-                    '</div></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0;"><div class="source-tag personal">✦ Personal</div><span class="pill ' +
-                    pillMap[priority] +
-                    '">' +
-                    labelMap[priority] +
-                    '</span></div></div><div class="assign-footer"><div class="assign-due">Due <span>' +
-                    dueStr +
-                    '</span></div><div class="assign-hp-val">+' +
-                    hp2 +
-                    ' HP</div><button class="btn" onclick="submitAssign(this)">Done</button></div>';
-                document.getElementById("pending-list").appendChild(card);
-                ["new-title", "new-course", "new-due", "new-hp"].forEach(
-                    (id) => (document.getElementById(id).value = ""),
-                );
-                toggleAddForm();
-                showToast("Assignment added");
-            }
-
-            function showAdminForm(g) {
-                const f = document.getElementById("admin-form-" + g);
-                f.style.display = "flex";
-                f.style.flexDirection = "column";
-                document.getElementById(g + "-add-wrap").style.display = "none";
-            }
-            function hideAdminForm(g) {
-                document.getElementById("admin-form-" + g).style.display =
-                    "none";
-                document.getElementById(g + "-add-wrap").style.display =
-                    "block";
-            }
-            function saveAdminTask(g) {
-                const title = document
-                    .getElementById("af-" + g + "-title")
-                    .value.trim();
-                const type = document.getElementById("af-" + g + "-type").value;
-                const due = document.getElementById("af-" + g + "-due").value;
-                const hp2 =
-                    parseInt(
-                        document.getElementById("af-" + g + "-hp").value,
-                    ) || 40;
-                if (!title) {
-                    showToast("Please enter a task title");
-                    return;
-                }
-                const typeColors = {
-                    "Study Hall": "blue",
-                    Social: "purple",
-                    Reading: "amber",
-                    Assignment: "green",
-                    Other: "muted",
-                };
-                const dueStr = due
-                    ? new Date(due).toLocaleDateString("en-GB", {
-                          day: "numeric",
-                          month: "short",
-                      })
-                    : "No date";
-                const card = document.createElement("div");
-                card.className = "admin-task-card";
-                card.innerHTML =
-                    '<div class="admin-task-info"><div class="admin-task-title">' +
-                    title +
-                    '</div><div class="admin-task-meta"><span class="pill ' +
-                    (typeColors[type] || "muted") +
-                    '">' +
-                    type +
-                    '</span><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">' +
-                    dueStr +
-                    '</span><span class="pill green">+' +
-                    hp2 +
-                    ' HP</span></div></div><button class="btn ghost" style="font-size:11px;padding:5px 10px;flex-shrink:0;" onclick="this.closest(\'.admin-task-card\').remove();showToast(\'Task removed\')">Remove</button>';
-                document.getElementById(g + "-tasks").appendChild(card);
-                document.getElementById("af-" + g + "-title").value = "";
-                document.getElementById("af-" + g + "-hp").value = "";
-                hideAdminForm(g);
-                showToast("Task assigned to group");
+                    .getElementById("sidebar-overlay")
+                    .classList.toggle("open");
             }
 
             function showToast(msg) {
@@ -1584,6 +126,102 @@
                     t.style.transform = "translateX(-50%) translateY(60px)";
                 }, 2200);
             }
+
+            function updateHP(h) {
+                const pct = Math.round((h / maxHp) * 100);
+                document.getElementById("hp-val").innerHTML =
+                    h + " <span>/ " + maxHp + " HP</span>";
+                document.getElementById("hp-pct").textContent = pct + "%";
+                const bar = document.getElementById("hp-bar");
+                bar.style.width = pct + "%";
+                bar.className =
+                    "bar-fill " +
+                    (pct > 60 ? "high" : pct > 30 ? "mid" : "low");
+            }
+
+            function gainHP(amount, label) {
+                hp = Math.min(maxHp, hp + amount);
+                updateHP(hp);
+                showToast("+" + amount + " HP — " + label);
+            }
+
+            function sidebarGroups(groups) {
+                return groups
+                    .map(
+                        (g) =>
+                            '<a class="sitem" href="/group?id=' +
+                            g.id +
+                            '"><div class="gpip" style="background: ' +
+                            g.color +
+                            '"></div>' +
+                            g.name +
+                            (g.isAdmin
+                                ? '<span class="sitem-admin">admin</span>'
+                                : "") +
+                            "</a>",
+                    )
+                    .join("");
+            }
+
+            fetch("/data.json")
+                .then((r) => r.json())
+                .then((data) => {
+                    const u = data.user;
+                    hp = u.hp;
+                    maxHp = u.maxHp;
+
+                    document.getElementById("topbar-initials").textContent =
+                        u.initials;
+                    document.getElementById("avatar-lg").textContent =
+                        u.initials;
+                    document.getElementById("user-name").textContent = u.name;
+                    document.getElementById("user-groups").textContent =
+                        u.groups.join(" · ");
+
+                    updateHP(hp);
+                    document.getElementById("hp-decay-text").textContent =
+                        "−" + u.hpDecay + " HP / day";
+                    document.getElementById("hp-tick").textContent =
+                        "next tick in " + u.nextTick;
+
+                    const dl = data.nextDeadline;
+                    document.getElementById("dl-day").textContent = dl.day;
+                    document.getElementById("dl-month").textContent = dl.month;
+                    document.getElementById("dl-title").textContent = dl.title;
+                    document.getElementById("dl-sub").textContent = dl.sub;
+                    document.getElementById("dl-reward").textContent =
+                        "+" + dl.reward + " HP";
+
+                    document.getElementById("task-badge").textContent =
+                        data.taskBadge;
+                    document.getElementById("assign-badge").textContent =
+                        data.assignBadge;
+
+                    document.getElementById("sidebar-groups").innerHTML =
+                        sidebarGroups(data.groups);
+
+                    document.getElementById("actions-grid").innerHTML =
+                        data.actions
+                            .map(
+                                (a) =>
+                                    '<button class="action-btn" onclick="gainHP(' +
+                                    a.hp +
+                                    ", '" +
+                                    a.label +
+                                    '\')">' +
+                                    '<div class="action-icon ' +
+                                    a.iconClass +
+                                    '">' +
+                                    a.icon +
+                                    "</div><div>" +
+                                    '<div class="action-label">' +
+                                    a.label +
+                                    '</div><div class="action-hp">+' +
+                                    a.hp +
+                                    " HP</div></div></button>",
+                            )
+                            .join("");
+                });
         </script>
     </body>
 </html>

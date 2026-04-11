@@ -1,0 +1,356 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="/style.css">
+    </head>
+    <body>
+        <h2 class="sr-only">StudyHP — Assignments</h2>
+
+        <div class="app">
+            <div class="topbar">
+                <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+                <div class="logo">study<span>hp</span></div>
+                <div class="topbar-right">
+                    <div class="notif-dot"></div>
+                    <div class="avatar-sm" id="topbar-initials">AL</div>
+                </div>
+            </div>
+
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-label">Me</div>
+                <a class="sitem" href="/">
+                    <span class="sicon">◈</span>Dashboard
+                </a>
+                <a class="sitem" href="/tasks">
+                    <span class="sicon">✓</span>My Tasks<span
+                        class="sbadge"
+                        id="task-badge"
+                        >3</span
+                    >
+                </a>
+                <a class="sitem active" href="/assignments">
+                    <span class="sicon">📄</span>Assignments<span
+                        class="sbadge"
+                        id="assign-badge"
+                        style="
+                            background: rgba(245, 158, 11, 0.25);
+                            color: var(--amber);
+                        "
+                        >2</span
+                    >
+                </a>
+                <div class="sidebar-label">Groups</div>
+                <div id="sidebar-groups"></div>
+                <a class="sitem sitem-new">
+                    <span class="sicon">+</span>New Group
+                </a>
+            </div>
+
+            <!-- ASSIGNMENTS -->
+            <div class="page active" id="page-assignments">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title">Assignments</div>
+                        <div class="page-sub">
+                            System-tracked and personal deadlines
+                        </div>
+                    </div>
+                    <button
+                        class="btn primary page-header-action"
+                        onclick="toggleAddForm()"
+                    >
+                        + Add assignment
+                    </button>
+                </div>
+                <div class="content">
+                    <div
+                        class="form-panel"
+                        id="add-form"
+                        style="display: none"
+                    >
+                        <div class="form-title">New assignment</div>
+                        <div class="form-row">
+                            <div class="form-label">Title</div>
+                            <input
+                                class="form-input"
+                                id="new-title"
+                                placeholder="e.g. Linear Algebra — Problem Set 5"
+                            />
+                        </div>
+                        <div class="form-row-split">
+                            <div class="form-row">
+                                <div class="form-label">Course / group</div>
+                                <input
+                                    class="form-input"
+                                    id="new-course"
+                                    placeholder="e.g. MATH301"
+                                />
+                            </div>
+                            <div class="form-row">
+                                <div class="form-label">Due date</div>
+                                <input
+                                    class="form-input"
+                                    id="new-due"
+                                    type="date"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-row-split">
+                            <div class="form-row">
+                                <div class="form-label">HP reward</div>
+                                <input
+                                    class="form-input"
+                                    id="new-hp"
+                                    type="number"
+                                    placeholder="e.g. 100"
+                                    min="0"
+                                    max="200"
+                                />
+                            </div>
+                            <div class="form-row">
+                                <div class="form-label">Priority</div>
+                                <select class="form-input" id="new-priority">
+                                    <option value="high">
+                                        High — due soon
+                                    </option>
+                                    <option value="mid" selected>Medium</option>
+                                    <option value="low">
+                                        Low — plenty of time
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button
+                                class="btn ghost"
+                                onclick="toggleAddForm()"
+                            >
+                                Cancel</button
+                            ><button
+                                class="btn primary"
+                                onclick="addAssignment()"
+                            >
+                                Save assignment
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="sec-label">Pending</div>
+                        <div class="card-list" id="pending-list"></div>
+                    </div>
+                    <div>
+                        <div class="sec-label">Submitted</div>
+                        <div class="card-list faded" id="submitted-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="sidebar-overlay"
+            id="sidebar-overlay"
+            onclick="toggleSidebar()"
+        ></div>
+        <div class="toast" id="toast"></div>
+
+        <script>
+            let assignBadge = 0,
+                formOpen = false;
+
+            function toggleSidebar() {
+                document.getElementById("sidebar").classList.toggle("open");
+                document
+                    .getElementById("sidebar-overlay")
+                    .classList.toggle("open");
+            }
+
+            function showToast(msg) {
+                const t = document.getElementById("toast");
+                t.textContent = msg;
+                t.style.transform = "translateX(-50%) translateY(0)";
+                clearTimeout(t._t);
+                t._t = setTimeout(() => {
+                    t.style.transform = "translateX(-50%) translateY(60px)";
+                }, 2200);
+            }
+
+            function submitAssign(btn) {
+                if (btn.classList.contains("done")) return;
+                btn.classList.add("done");
+                btn.textContent = "Done";
+                btn.closest(".assign-card").style.opacity = "0.45";
+                assignBadge = Math.max(0, assignBadge - 1);
+                const b = document.getElementById("assign-badge");
+                b.textContent = assignBadge;
+                if (assignBadge === 0) b.style.display = "none";
+                showToast("Submitted — HP earned");
+            }
+
+            function toggleAddForm() {
+                formOpen = !formOpen;
+                const f = document.getElementById("add-form");
+                f.style.display = formOpen ? "flex" : "none";
+                if (formOpen) f.style.flexDirection = "column";
+            }
+
+            function addAssignment() {
+                const title = document
+                    .getElementById("new-title")
+                    .value.trim();
+                const course =
+                    document.getElementById("new-course").value.trim() ||
+                    "Personal";
+                const due = document.getElementById("new-due").value;
+                const hp =
+                    parseInt(document.getElementById("new-hp").value) || 60;
+                const priority =
+                    document.getElementById("new-priority").value;
+                if (!title) {
+                    showToast("Please enter a title");
+                    return;
+                }
+                const pillMap = { high: "red", mid: "amber", low: "blue" };
+                const labelMap = {
+                    high: "High priority",
+                    mid: "Medium",
+                    low: "Low priority",
+                };
+                const dueStr = due
+                    ? new Date(due).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                      })
+                    : "No date";
+                const card = document.createElement("div");
+                card.className = "assign-card";
+                card.innerHTML =
+                    '<div class="assign-top"><div>' +
+                    '<div class="assign-title">' +
+                    title +
+                    '</div><div class="assign-course">' +
+                    course +
+                    '</div></div><div class="assign-badges">' +
+                    '<div class="source-tag personal">✦ Personal</div>' +
+                    '<span class="pill ' +
+                    pillMap[priority] +
+                    '">' +
+                    labelMap[priority] +
+                    "</span></div></div>" +
+                    '<div class="assign-footer">' +
+                    '<div class="assign-due">Due <span>' +
+                    dueStr +
+                    '</span></div><div class="assign-hp-val">+' +
+                    hp +
+                    ' HP</div><button class="btn" onclick="submitAssign(this)">Done</button></div>';
+                document.getElementById("pending-list").appendChild(card);
+                ["new-title", "new-course", "new-due", "new-hp"].forEach(
+                    (id) => (document.getElementById(id).value = ""),
+                );
+                toggleAddForm();
+                showToast("Assignment added");
+            }
+
+            const sourceTags = {
+                system:
+                    '<div class="source-tag system">⬡ System</div>',
+                admin:
+                    '<div class="source-tag admin">◈ Admin</div>',
+                personal:
+                    '<div class="source-tag personal">✦ Personal</div>',
+            };
+
+            function renderPending(a) {
+                return (
+                    '<div class="assign-card">' +
+                    '<div class="assign-top"><div>' +
+                    '<div class="assign-title">' +
+                    a.title +
+                    '</div><div class="assign-course">' +
+                    a.course +
+                    '</div></div>' +
+                    '<div class="assign-badges">' +
+                    (sourceTags[a.source] || "") +
+                    '<span class="pill ' +
+                    a.daysLeftColor +
+                    '">' +
+                    a.daysLeft +
+                    " days left</span>" +
+                    "</div></div>" +
+                    '<div class="assign-footer">' +
+                    '<div class="assign-due">Due <span>' +
+                    a.due +
+                    '</span></div>' +
+                    '<div class="assign-hp-val">+' +
+                    a.hp +
+                    ' HP</div>' +
+                    '<button class="btn" onclick="submitAssign(this)">Submit</button>' +
+                    "</div></div>"
+                );
+            }
+
+            function renderSubmitted(a) {
+                return (
+                    '<div class="assign-card">' +
+                    '<div class="assign-top"><div>' +
+                    '<div class="assign-title">' +
+                    a.title +
+                    '</div><div class="assign-course">' +
+                    a.course +
+                    '</div></div>' +
+                    '<div class="assign-badges">' +
+                    (sourceTags[a.source] || "") +
+                    '<span class="pill green">Submitted</span>' +
+                    "</div></div>" +
+                    '<div class="assign-footer">' +
+                    '<div class="assign-due">Submitted <span>' +
+                    a.submitted +
+                    '</span></div>' +
+                    '<div class="assign-hp-val" style="color: var(--muted);">+' +
+                    a.hp +
+                    ' HP</div>' +
+                    '<button class="btn done">Done</button>' +
+                    "</div></div>"
+                );
+            }
+
+            function sidebarGroups(groups) {
+                return groups
+                    .map(
+                        (g) =>
+                            '<a class="sitem" href="/group?id=' +
+                            g.id +
+                            '"><div class="gpip" style="background: ' +
+                            g.color +
+                            '"></div>' +
+                            g.name +
+                            (g.isAdmin
+                                ? '<span class="sitem-admin">admin</span>'
+                                : "") +
+                            "</a>",
+                    )
+                    .join("");
+            }
+
+            fetch("/data.json")
+                .then((r) => r.json())
+                .then((data) => {
+                    document.getElementById(
+                        "topbar-initials",
+                    ).textContent = data.user.initials;
+
+                    document.getElementById("task-badge").textContent =
+                        data.taskBadge;
+                    assignBadge = data.assignBadge;
+                    document.getElementById("assign-badge").textContent =
+                        assignBadge;
+
+                    document.getElementById("sidebar-groups").innerHTML =
+                        sidebarGroups(data.groups);
+
+                    document.getElementById("pending-list").innerHTML =
+                        data.assignments.pending.map(renderPending).join("");
+                    document.getElementById("submitted-list").innerHTML =
+                        data.assignments.submitted.map(renderSubmitted).join("");
+                });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,245 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="/style.css">
+    </head>
+    <body>
+        <h2 class="sr-only">StudyHP — CS Grind</h2>
+
+        <div class="app">
+            <div class="topbar">
+                <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+                <div class="logo">study<span>hp</span></div>
+                <div class="topbar-right">
+                    <div class="notif-dot"></div>
+                    <div class="avatar-sm" id="topbar-initials">AL</div>
+                </div>
+            </div>
+
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-label">Me</div>
+                <a class="sitem" href="/">
+                    <span class="sicon">◈</span>Dashboard
+                </a>
+                <a class="sitem" href="/tasks">
+                    <span class="sicon">✓</span>My Tasks<span
+                        class="sbadge"
+                        id="task-badge"
+                        >3</span
+                    >
+                </a>
+                <a class="sitem" href="/assignments">
+                    <span class="sicon">📄</span>Assignments<span
+                        class="sbadge"
+                        id="assign-badge"
+                        style="
+                            background: rgba(245, 158, 11, 0.25);
+                            color: var(--amber);
+                        "
+                        >2</span
+                    >
+                </a>
+                <div class="sidebar-label">Groups</div>
+                <a class="sitem" href="/group/math">
+                    <div class="gpip" style="background: #7c5cfc"></div>
+                    MATH301<span
+                        style="
+                            font-size: 10px;
+                            color: var(--accent2);
+                            margin-left: auto;
+                        "
+                        >admin</span
+                    >
+                </a>
+                <a class="sitem active" href="/group/cs">
+                    <div class="gpip" style="background: #38bdf8"></div>
+                    CS Grind
+                </a>
+                <a class="sitem" href="/group/bio">
+                    <div class="gpip" style="background: #22d3a0"></div>
+                    Bio Squad
+                </a>
+                <a
+                    class="sitem"
+                    style="
+                        color: rgba(167, 139, 250, 0.6);
+                        border: 1px dashed rgba(167, 139, 250, 0.2);
+                        margin-top: 4px;
+                    "
+                >
+                    <span class="sicon">+</span>New Group
+                </a>
+            </div>
+
+            <!-- GROUP CS GRIND -->
+            <div class="page active" id="page-group">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title" id="group-name">CS Grind</div>
+                        <div class="page-sub" id="group-sub">—</div>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="group-stat-row">
+                        <div class="gstat">
+                            <div class="gstat-val" id="stat-avghp">—</div>
+                            <div class="gstat-label">avg HP</div>
+                        </div>
+                        <div class="gstat">
+                            <div class="gstat-val" id="stat-online">—</div>
+                            <div class="gstat-label">online</div>
+                        </div>
+                        <div class="gstat">
+                            <div class="gstat-val" id="stat-tasks">—</div>
+                            <div class="gstat-label">active tasks</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="sec-label">Members</div>
+                        <div
+                            id="members-list"
+                            style="
+                                display: flex;
+                                flex-direction: column;
+                                gap: 7px;
+                            "
+                        ></div>
+                    </div>
+                    <div>
+                        <div class="sec-label">Group tasks</div>
+                        <div
+                            id="group-tasks"
+                            style="
+                                display: flex;
+                                flex-direction: column;
+                                gap: 7px;
+                            "
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="sidebar-overlay"
+            id="sidebar-overlay"
+            onclick="toggleSidebar()"
+        ></div>
+        <div class="toast" id="toast"></div>
+
+        <script>
+            const GROUP_ID = "cs";
+
+            function toggleSidebar() {
+                document.getElementById("sidebar").classList.toggle("open");
+                document
+                    .getElementById("sidebar-overlay")
+                    .classList.toggle("open");
+            }
+
+            function showToast(msg) {
+                const t = document.getElementById("toast");
+                t.textContent = msg;
+                t.style.transform = "translateX(-50%) translateY(0)";
+                clearTimeout(t._t);
+                t._t = setTimeout(() => {
+                    t.style.transform = "translateX(-50%) translateY(60px)";
+                }, 2200);
+            }
+
+            function renderMember(m) {
+                const hpColorVar = {
+                    green: "var(--green)",
+                    amber: "var(--amber)",
+                    red: "var(--red)",
+                }[m.hpColor];
+                const pct = Math.round((m.hp / 1000) * 100);
+                const youSpan = m.isYou
+                    ? '<span style="font-size: 11px; color: var(--muted); font-weight: 400;">(you)</span>'
+                    : "";
+                const roleStyle = m.roleColor
+                    ? ' style="color: var(--' + m.roleColor + ')"'
+                    : "";
+                return (
+                    '<div class="member-card">' +
+                    '<div class="m-av" style="background: ' +
+                    m.color +
+                    '">' +
+                    m.initials +
+                    "</div>" +
+                    '<div class="m-info">' +
+                    '<div class="m-name">' +
+                    m.name +
+                    " " +
+                    youSpan +
+                    "</div>" +
+                    '<div class="m-sub"' +
+                    roleStyle +
+                    ">" +
+                    m.role +
+                    "</div></div>" +
+                    '<div class="m-hp">' +
+                    '<div class="m-hp-val" style="color: ' +
+                    hpColorVar +
+                    '">' +
+                    m.hp +
+                    '</div><div class="m-bar">' +
+                    '<div class="m-bar-fill" style="width: ' +
+                    pct +
+                    "%; background: " +
+                    hpColorVar +
+                    '"></div></div></div>' +
+                    '<div class="spip ' +
+                    m.status +
+                    '"></div></div>'
+                );
+            }
+
+            function renderTask(task) {
+                return (
+                    '<div class="admin-task-card">' +
+                    '<div class="admin-task-info">' +
+                    '<div class="admin-task-title">' +
+                    task.title +
+                    '</div><div class="admin-task-meta">' +
+                    '<span class="pill ' +
+                    task.typeColor +
+                    '">' +
+                    task.type +
+                    '</span><span style="font-size: 11px; color: var(--muted); font-family: var(--mono);">' +
+                    task.date +
+                    '</span><span class="pill green">+' +
+                    task.hp +
+                    " HP</span></div></div></div>"
+                );
+            }
+
+            fetch("/data.json")
+                .then((r) => r.json())
+                .then((data) => {
+                    document.getElementById(
+                        "topbar-initials",
+                    ).textContent = data.user.initials;
+                    document.getElementById("task-badge").textContent =
+                        data.taskBadge;
+                    document.getElementById("assign-badge").textContent =
+                        data.assignBadge;
+
+                    const g = data.groups.find((g) => g.id === GROUP_ID);
+                    document.getElementById("group-name").textContent = g.name;
+                    document.getElementById("group-sub").textContent =
+                        g.subtitle;
+                    document.getElementById("stat-avghp").textContent =
+                        g.stats.avgHp;
+                    document.getElementById("stat-online").textContent =
+                        g.stats.online;
+                    document.getElementById("stat-tasks").textContent =
+                        g.stats.activeTasks;
+
+                    document.getElementById("members-list").innerHTML =
+                        g.members.map(renderMember).join("");
+                    document.getElementById("group-tasks").innerHTML =
+                        g.tasks.map(renderTask).join("");
+                });
+        </script>
+    </body>
+</html>

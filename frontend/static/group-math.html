@@ -1,0 +1,393 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="/style.css">
+    </head>
+    <body>
+        <h2 class="sr-only">StudyHP — MATH301</h2>
+
+        <div class="app">
+            <div class="topbar">
+                <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+                <div class="logo">study<span>hp</span></div>
+                <div class="topbar-right">
+                    <div class="notif-dot"></div>
+                    <div class="avatar-sm" id="topbar-initials">AL</div>
+                </div>
+            </div>
+
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-label">Me</div>
+                <a class="sitem" href="/">
+                    <span class="sicon">◈</span>Dashboard
+                </a>
+                <a class="sitem" href="/tasks">
+                    <span class="sicon">✓</span>My Tasks<span
+                        class="sbadge"
+                        id="task-badge"
+                        >3</span
+                    >
+                </a>
+                <a class="sitem" href="/assignments">
+                    <span class="sicon">📄</span>Assignments<span
+                        class="sbadge"
+                        id="assign-badge"
+                        style="
+                            background: rgba(245, 158, 11, 0.25);
+                            color: var(--amber);
+                        "
+                        >2</span
+                    >
+                </a>
+                <div class="sidebar-label">Groups</div>
+                <a class="sitem active" href="/group/math">
+                    <div class="gpip" style="background: #7c5cfc"></div>
+                    MATH301<span
+                        style="
+                            font-size: 10px;
+                            color: var(--accent2);
+                            margin-left: auto;
+                        "
+                        >admin</span
+                    >
+                </a>
+                <a class="sitem" href="/group/cs">
+                    <div class="gpip" style="background: #38bdf8"></div>
+                    CS Grind
+                </a>
+                <a class="sitem" href="/group/bio">
+                    <div class="gpip" style="background: #22d3a0"></div>
+                    Bio Squad
+                </a>
+                <a
+                    class="sitem"
+                    style="
+                        color: rgba(167, 139, 250, 0.6);
+                        border: 1px dashed rgba(167, 139, 250, 0.2);
+                        margin-top: 4px;
+                    "
+                >
+                    <span class="sicon">+</span>New Group
+                </a>
+            </div>
+
+            <!-- GROUP MATH301 -->
+            <div class="page active" id="page-group">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title" id="group-name">MATH301</div>
+                        <div class="page-sub" id="group-sub">—</div>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="group-stat-row">
+                        <div class="gstat">
+                            <div class="gstat-val" id="stat-avghp">—</div>
+                            <div class="gstat-label">avg HP</div>
+                        </div>
+                        <div class="gstat">
+                            <div class="gstat-val" id="stat-online">—</div>
+                            <div class="gstat-label">online</div>
+                        </div>
+                        <div class="gstat">
+                            <div class="gstat-val" id="stat-tasks">—</div>
+                            <div class="gstat-label">active tasks</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="sec-label">Members</div>
+                        <div
+                            id="members-list"
+                            style="
+                                display: flex;
+                                flex-direction: column;
+                                gap: 7px;
+                            "
+                        ></div>
+                    </div>
+                    <div>
+                        <div class="sec-label">Group tasks</div>
+                        <div
+                            id="group-tasks"
+                            style="
+                                display: flex;
+                                flex-direction: column;
+                                gap: 7px;
+                            "
+                        ></div>
+                        <div style="margin-top: 8px" id="add-wrap">
+                            <button
+                                class="add-btn"
+                                onclick="showAdminForm()"
+                            >
+                                <span class="plus">+</span>Add task for this
+                                group
+                            </button>
+                        </div>
+                        <div
+                            class="form-panel"
+                            id="admin-form"
+                            style="display: none; margin-top: 8px"
+                        >
+                            <div class="form-title" id="form-title">
+                                New group task
+                            </div>
+                            <div class="form-row">
+                                <div class="form-label">Task title</div>
+                                <input
+                                    class="form-input"
+                                    id="af-title"
+                                    placeholder="e.g. Read chapter 9"
+                                />
+                            </div>
+                            <div class="form-row-split">
+                                <div class="form-row">
+                                    <div class="form-label">Type</div>
+                                    <select class="form-input" id="af-type">
+                                        <option>Study Hall</option>
+                                        <option>Social</option>
+                                        <option>Reading</option>
+                                        <option>Assignment</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-label">Due date</div>
+                                    <input
+                                        class="form-input"
+                                        id="af-due"
+                                        type="date"
+                                        style="color-scheme: dark"
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-label">HP reward</div>
+                                <input
+                                    class="form-input"
+                                    id="af-hp"
+                                    type="number"
+                                    placeholder="e.g. 50"
+                                    min="0"
+                                    max="200"
+                                />
+                            </div>
+                            <div class="form-actions">
+                                <button
+                                    class="btn ghost"
+                                    onclick="hideAdminForm()"
+                                >
+                                    Cancel</button
+                                ><button
+                                    class="btn primary"
+                                    onclick="saveAdminTask()"
+                                >
+                                    Assign to group
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="sidebar-overlay"
+            id="sidebar-overlay"
+            onclick="toggleSidebar()"
+        ></div>
+        <div class="toast" id="toast"></div>
+
+        <script>
+            const GROUP_ID = "math";
+
+            function toggleSidebar() {
+                document.getElementById("sidebar").classList.toggle("open");
+                document
+                    .getElementById("sidebar-overlay")
+                    .classList.toggle("open");
+            }
+
+            function showToast(msg) {
+                const t = document.getElementById("toast");
+                t.textContent = msg;
+                t.style.transform = "translateX(-50%) translateY(0)";
+                clearTimeout(t._t);
+                t._t = setTimeout(() => {
+                    t.style.transform = "translateX(-50%) translateY(60px)";
+                }, 2200);
+            }
+
+            function showAdminForm() {
+                const f = document.getElementById("admin-form");
+                f.style.display = "flex";
+                f.style.flexDirection = "column";
+                document.getElementById("add-wrap").style.display = "none";
+            }
+
+            function hideAdminForm() {
+                document.getElementById("admin-form").style.display = "none";
+                document.getElementById("add-wrap").style.display = "block";
+            }
+
+            function saveAdminTask() {
+                const title = document
+                    .getElementById("af-title")
+                    .value.trim();
+                const type = document.getElementById("af-type").value;
+                const due = document.getElementById("af-due").value;
+                const hp =
+                    parseInt(document.getElementById("af-hp").value) || 40;
+                if (!title) {
+                    showToast("Please enter a task title");
+                    return;
+                }
+                const typeColors = {
+                    "Study Hall": "blue",
+                    Social: "purple",
+                    Reading: "amber",
+                    Assignment: "green",
+                    Other: "muted",
+                };
+                const dueStr = due
+                    ? new Date(due).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                      })
+                    : "No date";
+                const card = document.createElement("div");
+                card.className = "admin-task-card";
+                card.innerHTML =
+                    '<div class="admin-task-info">' +
+                    '<div class="admin-task-title">' +
+                    title +
+                    '</div><div class="admin-task-meta">' +
+                    '<span class="pill ' +
+                    (typeColors[type] || "muted") +
+                    '">' +
+                    type +
+                    '</span><span style="font-size: 11px; color: var(--muted); font-family: var(--mono);">' +
+                    dueStr +
+                    '</span><span class="pill green">+' +
+                    hp +
+                    " HP</span></div></div>" +
+                    '<button class="btn ghost" style="font-size: 11px; padding: 5px 10px; flex-shrink: 0;" ' +
+                    "onclick=\"this.closest('.admin-task-card').remove(); showToast('Task removed')\">" +
+                    "Remove</button>";
+                document.getElementById("group-tasks").appendChild(card);
+                document.getElementById("af-title").value = "";
+                document.getElementById("af-hp").value = "";
+                hideAdminForm();
+                showToast("Task assigned to group");
+            }
+
+            function renderMember(m) {
+                const hpColorVar = {
+                    green: "var(--green)",
+                    amber: "var(--amber)",
+                    red: "var(--red)",
+                }[m.hpColor];
+                const pct = Math.round((m.hp / 1000) * 100);
+                const youSpan = m.isYou
+                    ? '<span style="font-size: 11px; color: var(--muted); font-weight: 400;">(you)</span>'
+                    : "";
+                const roleStyle = m.roleColor
+                    ? ' style="color: var(--' + m.roleColor + ')"'
+                    : "";
+                return (
+                    '<div class="member-card">' +
+                    '<div class="m-av" style="background: ' +
+                    m.color +
+                    '">' +
+                    m.initials +
+                    "</div>" +
+                    '<div class="m-info">' +
+                    '<div class="m-name">' +
+                    m.name +
+                    " " +
+                    youSpan +
+                    "</div>" +
+                    '<div class="m-sub"' +
+                    roleStyle +
+                    ">" +
+                    m.role +
+                    "</div></div>" +
+                    '<div class="m-hp">' +
+                    '<div class="m-hp-val" style="color: ' +
+                    hpColorVar +
+                    '">' +
+                    m.hp +
+                    '</div><div class="m-bar">' +
+                    '<div class="m-bar-fill" style="width: ' +
+                    pct +
+                    "%; background: " +
+                    hpColorVar +
+                    '"></div></div></div>' +
+                    '<div class="spip ' +
+                    m.status +
+                    '"></div></div>'
+                );
+            }
+
+            function renderTask(task) {
+                return (
+                    '<div class="admin-task-card">' +
+                    '<div class="admin-task-info">' +
+                    '<div class="admin-task-title">' +
+                    task.title +
+                    '</div><div class="admin-task-meta">' +
+                    '<span class="pill ' +
+                    task.typeColor +
+                    '">' +
+                    task.type +
+                    '</span><span style="font-size: 11px; color: var(--muted); font-family: var(--mono);">' +
+                    task.date +
+                    '</span><span class="pill green">+' +
+                    task.hp +
+                    " HP</span></div></div>" +
+                    '<button class="btn ghost" style="font-size: 11px; padding: 5px 10px; flex-shrink: 0;" ' +
+                    "onclick=\"this.closest('.admin-task-card').remove(); showToast('Task removed')\">" +
+                    "Remove</button></div>"
+                );
+            }
+
+            fetch("/data.json")
+                .then((r) => r.json())
+                .then((data) => {
+                    document.getElementById(
+                        "topbar-initials",
+                    ).textContent = data.user.initials;
+                    document.getElementById("task-badge").textContent =
+                        data.taskBadge;
+                    document.getElementById("assign-badge").textContent =
+                        data.assignBadge;
+
+                    const g = data.groups.find((g) => g.id === GROUP_ID);
+                    document.getElementById("group-name").textContent = g.name;
+                    document.getElementById("group-sub").innerHTML =
+                        g.subtitle +
+                        (g.isAdmin
+                            ? ' · <span style="color: var(--accent2)">you are admin</span>'
+                            : "");
+                    document.getElementById("stat-avghp").textContent =
+                        g.stats.avgHp;
+                    document.getElementById("stat-online").textContent =
+                        g.stats.online;
+                    document.getElementById("stat-tasks").textContent =
+                        g.stats.activeTasks;
+
+                    document.getElementById("members-list").innerHTML =
+                        g.members.map(renderMember).join("");
+                    document.getElementById("group-tasks").innerHTML =
+                        g.tasks.map(renderTask).join("");
+
+                    document.getElementById("form-title").textContent =
+                        "New group task — " + g.name;
+
+                    if (!g.isAdmin) {
+                        document.getElementById("add-wrap").style.display =
+                            "none";
+                    }
+                });
+        </script>
+    </body>
+</html>
