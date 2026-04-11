@@ -14,7 +14,7 @@ function showToast(msg) {
 }
 
 function group_colour(gid) {
-  let hash = Math.floor(gid / 1.61803398875 * 360);
+  let hash = Math.floor((gid / 1.61803398875) * 360);
 
   return `hsl(${hash}, 100%, 50%)`;
 }
@@ -39,4 +39,8 @@ function sidebarGroups(groups, GROUP_ID) {
       );
     })
     .join("");
+}
+
+function to_initials(name) {
+  return name ? name.match(/\b(\w)/g).join("") : "ABCD";
 }

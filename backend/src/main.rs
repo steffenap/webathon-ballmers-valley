@@ -37,9 +37,11 @@ mod api {
     pub(crate) mod user {
         use std::time::{Instant, UNIX_EPOCH};
 
+        use axum::{http::StatusCode, response::Redirect};
         use axum_extra::extract::{CookieJar, cookie::Cookie};
+        use serde::Serialize;
 
-        use crate::{UserId, jwt::Authenticator};
+        use crate::{UserId, api::group::stuff::UserData, jwt::Authenticator};
 
         use super::stupid_imports::*;
         pub(crate) async fn groups(
@@ -55,11 +57,47 @@ mod api {
             Json(res.into_iter().map(|x| (x.id as u32, x.name)).collect())
         }
 
+        #[derive(Serialize)]
+        pub(crate) struct UserDetails {
+            id: u32,
+            name: String,
+            full_name: String,
+            health: u32,
+        }
+
+        pub(crate) async fn user_details(
+            Path(user_id): Path<u32>,
+            State(state): State<Arc<AppState>>,
+        ) -> Json<UserDetails> {
+            let mut conn = state.db.acquire().await.unwrap();
+
+            let res = sqlx::query!(
+                "select id, username, full_name, health from users where id = ?1",
+                user_id
+            )
+            .fetch_one(&mut *conn)
+            .await
+            .unwrap();
+
+            Json(UserDetails {
+                id: res.id as u32,
+                name: res.username,
+                full_name: res.full_name,
+                health: res.health as u32,
+            })
+        }
+
         pub(crate) async fn whoami(
             State(state): State<Arc<AppState>>,
             jar: CookieJar,
-        ) -> Json<UserId> {
-            Json(state.auth.validate(&crate::jwt::Cookie::from_jar(&jar).unwrap()).unwrap())
+        ) -> Result<Json<UserId>, Redirect> {
+            if let Some(cookie) = crate::jwt::Cookie::from_jar(&jar)
+                && let Some(ans) = state.auth.validate(&cookie)
+            {
+                Ok(Json(ans))
+            } else {
+                Err(Redirect::temporary("/login"))
+            }
         }
 
         #[derive(Deserialize)]
@@ -150,7 +188,10 @@ mod api {
             }
             #[derive(Serialize)]
             pub(crate) struct UserData {
+                id: u32,
                 name: String,
+                full_name: String,
+                health: u32,
             }
             #[derive(Serialize)]
             pub(crate) struct GroupData {
@@ -167,7 +208,7 @@ mod api {
             ) -> Json<GroupData> {
                 let mut conn = state.db.acquire().await.unwrap();
 
-                let user_res = sqlx::query!("select users.id, username from users inner join user_group on users.id = user_group.user where user_group.gr = ?1",
+                let user_res = sqlx::query!("select users.id, username, full_name, health from users inner join user_group on users.id = user_group.user where user_group.gr = ?1",
                     group_id
                 )
                 .fetch_all(&mut *conn)
@@ -194,7 +235,12 @@ mod api {
                     .collect::<Vec<TaskData>>();
                 let users = user_res
                     .into_iter()
-                    .map(|a| UserData { name: a.username })
+                    .map(|a| UserData {
+                        id: a.id as u32,
+                        name: a.username,
+                        full_name: a.full_name,
+                        health: a.health as u32,
+                    })
                     .collect::<Vec<UserData>>();
 
                 Json(GroupData {
@@ -308,6 +354,8 @@ mod api {
     }
 
     pub(crate) mod task {
+        use axum_extra::extract::CookieJar;
+
         use super::stupid_imports::*;
         pub(crate) async fn title(
             Path(task_id): Path<u32>,
@@ -352,10 +400,10 @@ mod api {
         }
         pub(crate) async fn create(
             State(state): State<Arc<AppState>>,
+            jar: CookieJar,
             Json(data): Json<TaskCreationData>,
         ) -> Json<()> {
             let mut conn = state.db.acquire().await.unwrap();
-
             let TaskCreationData {
                 title,
                 r#type,
@@ -453,6 +501,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/user/signup", post(api::user::signup))
         .route("/api/user/whoami", get(api::user::whoami))
         .route("/api/cookies", get(api::cookies))
+        .route("/api/user/{user_id}", get(api::user::user_details))
         .route("/api/user/signin", post(api::user::signin))
         .route("/api/task/{task_id}", delete(api::task::delete))
         .route("/api/task", post(api::task::create))

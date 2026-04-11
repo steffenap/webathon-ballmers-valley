@@ -143,67 +143,70 @@
             }
 
             async function setup() {
+                const USER_ID = await (await fetch(`/api/user/whoami`)).json();
+                let groups = await (
+                    await fetch(`/api/user/${USER_ID}/groups`)
+                ).json();
 
-              const USER_ID = await (await fetch(`/api/user/whoami`)).json();
-                    let groups = await (await fetch(`/api/user/${USER_ID}/groups`)).json();
+                let user = await (await fetch(`/api/user/${USER_ID}`)).json();
 
-                    document.getElementById("sidebar-groups").innerHTML =
-                        sidebarGroups(groups, null);
+                document.getElementById("sidebar-groups").innerHTML =
+                    sidebarGroups(groups, null);
 
-                    const u = data.user;
-                    hp = u.hp;
-                    maxHp = u.maxHp;
+                const u = user;
+                hp = u.health;
+                maxHp = maxHp;
 
-                    document.getElementById("topbar-initials").textContent =
-                        u.initials;
-                    document.getElementById("avatar-lg").textContent =
-                        u.initials;
-                    document.getElementById("user-name").textContent = u.name;
-                    document.getElementById("user-groups").textContent =
-                        u.groups.join(" · ");
+                document.getElementById("topbar-initials").textContent =
+                    to_initials(u.full_name);
+                document.getElementById("avatar-lg").textContent = to_initials(
+                    u.full_name,
+                );
+                document.getElementById("user-name").textContent = u.name;
+                // document.getElementById("user-groups").textContent =
+                //     u.groups.join(" · ");
 
-                    updateHP(hp);
-                    document.getElementById("hp-decay-text").textContent =
-                        "−" + u.hpDecay + " HP / day";
-                    document.getElementById("hp-tick").textContent =
-                        "next tick in " + u.nextTick;
+                updateHP(hp);
+                document.getElementById("hp-decay-text").textContent =
+                    "−" + 10000 + " HP / day";
+                document.getElementById("hp-tick").textContent =
+                    "next tick in " + 1000;
 
-                    const dl = data.nextDeadline;
-                    document.getElementById("dl-day").textContent = dl.day;
-                    document.getElementById("dl-month").textContent = dl.month;
-                    document.getElementById("dl-title").textContent = dl.title;
-                    document.getElementById("dl-sub").textContent = dl.sub;
-                    document.getElementById("dl-reward").textContent =
-                        "+" + dl.reward + " HP";
+                const dl = data.nextDeadline;
+                document.getElementById("dl-day").textContent = dl.day;
+                document.getElementById("dl-month").textContent = dl.month;
+                document.getElementById("dl-title").textContent = dl.title;
+                document.getElementById("dl-sub").textContent = dl.sub;
+                document.getElementById("dl-reward").textContent =
+                    "+" + dl.reward + " HP";
 
-                    document.getElementById("task-badge").textContent =
-                        data.taskBadge;
-                    document.getElementById("assign-badge").textContent =
-                        data.assignBadge;
+                document.getElementById("task-badge").textContent =
+                    data.taskBadge;
+                document.getElementById("assign-badge").textContent =
+                    data.assignBadge;
 
-                    document.getElementById("actions-grid").innerHTML =
-                        data.actions
-                            .map(
-                                (a) =>
-                                    '<button class="action-btn" onclick="gainHP(' +
-                                    a.hp +
-                                    ", '" +
-                                    a.label +
-                                    '\')">' +
-                                    '<div class="action-icon ' +
-                                    a.iconClass +
-                                    '">' +
-                                    a.icon +
-                                    "</div><div>" +
-                                    '<div class="action-label">' +
-                                    a.label +
-                                    '</div><div class="action-hp">+' +
-                                    a.hp +
-                                    " HP</div></div></button>",
-                            )
-                            .join("");
-                }
-                setup();
+                document.getElementById("actions-grid").innerHTML = data.actions
+                    .map(
+                        (a) =>
+                            '<button class="action-btn" onclick="gainHP(' +
+                            a.health +
+                            ", '" +
+                            a.label +
+                            "')\">" +
+                            '<div class="action-icon ' +
+                            a.iconClass +
+                            '">' +
+                            a.icon +
+                            "</div><div>" +
+                            '<div class="action-label">' +
+                            a.label +
+                            '</div><div class="action-hp">+' +
+                            a.health +
+                            " HP</div></div></button>",
+                    )
+                    .join("");
+            }
+            setup();
         </script>
     </body>
 </html>

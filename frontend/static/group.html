@@ -182,11 +182,11 @@
                 document.getElementById("add-wrap").style.display = "block";
             }
 
-            function saveAdminTask() {
+            async function saveAdminTask() {
                 const title = document.getElementById("af-title").value.trim();
                 const type = document.getElementById("af-type").value;
-                const due = document.getElementById("af-due").value;
-                const hp =
+                const dueVal = document.getElementById("af-due").value;
+                const reward =
                     parseInt(document.getElementById("af-hp").value) || 40;
                 if (!title) {
                     showToast("Please enter a task title");
@@ -199,58 +199,72 @@
                     Assignment: "green",
                     Other: "muted",
                 };
-                const dueStr = due
-                    ? new Date(due).toLocaleDateString("en-GB", {
+                const due = dueVal
+                    ? new Date(dueVal).toLocaleDateString("en-GB", {
                           day: "numeric",
                           month: "short",
                       })
                     : "No date";
-                const card = document.createElement("div");
-                card.className = "admin-task-card";
-                card.innerHTML =
-                    '<div class="admin-task-info">' +
-                    '<div class="admin-task-title">' +
-                    title +
-                    '</div><div class="admin-task-meta">' +
-                    '<span class="pill ' +
-                    (typeColors[type] || "muted") +
-                    '">' +
-                    type +
-                    '</span><span class="date-label">' +
-                    dueStr +
-                    '</span><span class="pill green">+' +
-                    hp +
-                    " HP</span></div></div>" +
-                    '<button class="btn ghost" style="font-size: 11px; padding: 5px 10px; flex-shrink: 0;" ' +
-                    "onclick=\"this.closest('.admin-task-card').remove(); showToast('Task removed')\">" +
-                    "Remove</button>";
-                document.getElementById("group-tasks").appendChild(card);
-                document.getElementById("af-title").value = "";
-                document.getElementById("af-hp").value = "";
+                const group = GROUP_ID;
+                await fetch("/api/task", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        title,
+                        type,
+                        due,
+                        reward,
+                        group,
+                    }),
+                    credentials: "include",
+                });
+                // const card = document.createElement("div");
+                // card.className = "admin-task-card";
+                // card.innerHTML =
+                //     '<div class="admin-task-info">' +
+                //     '<div class="admin-task-title">' +
+                //     title +
+                //     '</div><div class="admin-task-meta">' +
+                //     '<span class="pill ' +
+                //     (typeColors[type] || "muted") +
+                //     '">' +
+                //     type +
+                //     '</span><span class="date-label">' +
+                //     dueStr +
+                //     '</span><span class="pill green">+' +
+                //     hp +
+                //     " HP</span></div></div>" +
+                //     '<button class="btn ghost" style="font-size: 11px; padding: 5px 10px; flex-shrink: 0;" ' +
+                //     "onclick=\"this.closest('.admin-task-card').remove(); showToast('Task removed')\">" +
+                //     "Remove</button>";
+                // document.getElementById("group-tasks").appendChild(card);
+                // document.getElementById("af-title").value = "";
+                // document.getElementById("af-hp").value = "";
                 hideAdminForm();
                 showToast("Task assigned to group");
             }
 
-            function renderMember(m) {
+            function renderMember(m, user_id) {
                 const hpColorVar = {
                     green: "var(--green)",
                     amber: "var(--amber)",
                     red: "var(--red)",
                 }[m.hpColor];
-                const pct = Math.round((m.hp / 1000) * 100);
-                const youSpan = m.isYou
-                    ? '<span class="you-label">(you)</span>'
-                    : "";
-                const roleStyle = m.roleColor
+                const pct = Math.round((m.health / 1000) * 100);
+                const youSpan =
+                    m.id == user_id
+                        ? '<span class="you-label">(you)</span>'
+                        : "";
+                const roleStyle = false //m.roleColor
                     ? ' style="color: var(--' + m.roleColor + ')"'
                     : "";
                 return (
                     '<div class="member-card">' +
-                    '<div class="m-av" style="background: ' +
-                    m.color +
-                    '">' +
-                    m.initials +
-                    "</div>" +
+                    // '<div class="m-av" style="background: ' +
+                    //m.color +
+                    //'">' +
+                    to_initials(m.full_name) +
+                    // "</div>" +
                     '<div class="m-info">' +
                     '<div class="m-name">' +
                     m.name +
@@ -260,22 +274,23 @@
                     '<div class="m-sub"' +
                     roleStyle +
                     ">" +
-                    m.role +
+                    // m.role +
                     "</div></div>" +
                     '<div class="m-hp">' +
                     '<div class="m-hp-val" style="color: ' +
                     hpColorVar +
                     '">' +
-                    m.hp +
+                    m.health +
                     '</div><div class="m-bar">' +
                     '<div class="m-bar-fill" style="width: ' +
                     pct +
                     "%; background: " +
                     hpColorVar +
                     '"></div></div></div>' +
-                    '<div class="spip ' +
-                    m.status +
-                    '"></div></div>'
+                    // '<div class="spip ' +
+                    //m.status +
+                    //'"></div>
+                    "</div>"
                 );
             }
 
@@ -296,70 +311,71 @@
                     '">' +
                     task.type +
                     '</span><span class="date-label">' +
-                    task.date +
+                    task.due +
                     '</span><span class="pill green">+' +
-                    task.hp +
+                    task.reward +
                     " HP</span></div></div>" +
                     removeBtn +
                     "</div>"
                 );
             }
 
-            function to_initials(x) {
-              return "ABCDE";
+            async function setup() {
+                const USER_ID = await (await fetch(`/api/user/whoami`)).json();
+
+                let user_data = await (
+                    await fetch(`/api/user/${USER_ID}`)
+                ).json();
+                console.log(user_data);
+                document.querySelector("#topbar-initials").textContent =
+                    to_initials(user_data.full_name);
+
+                // utestående tasks
+                // document.getElementById("task-badge").textContent =
+                //     data.taskBadge;
+                // document.getElementById("assign-badge").textContent =
+                //     data.assignBadge;
+
+                let groups = await (
+                    await fetch(`/api/user/${USER_ID}/groups`)
+                ).json();
+                let g = await (await fetch(`/api/group/${GROUP_ID}`)).json();
+
+                document.getElementById("sidebar-groups").innerHTML =
+                    sidebarGroups(groups, GROUP_ID);
+
+                document.getElementById("group-name").textContent = g.name;
+                document.getElementById("group-sub").innerHTML =
+                    g.admin_id == USER_ID
+                        ? // g.subtitle +
+                          ' · <span style="color: var(--accent2)">you are admin</span>'
+                        : "";
+                document.getElementById("stat-avghp").textContent =
+                    g.users.reduce(
+                        (accumulator, user) => accumulator + user.health,
+                        0,
+                    ) / g.users.length;
+                // document.getElementById("stat-online").textContent =
+                //     100;
+                document.getElementById("stat-tasks").textContent =
+                    g.tasks.length;
+
+                document.getElementById("members-list").innerHTML = g.users
+                    .map((user) => renderMember(user, USER_ID))
+                    .join("");
+                document.getElementById("group-tasks").innerHTML = g.tasks
+                    .map((t) => renderTask(t, g.admin_id == USER_ID))
+                    .join("");
+
+                document.getElementById("form-title").textContent =
+                    "New group task — " + g.name;
+
+                if (!g.admin_id == USER_ID) {
+                    document.getElementById("add-wrap").style.display = "none";
+                }
             }
 
-            async function setup() {
-              const USER_ID = await (await fetch(`/api/user/whoami`)).json();
-
-                  let user_data = await fetch(`/user/${USER_ID}`);
-                  document.querySelector("#topbar-initials").textContent = to_initials(user_data.full_name);
-
-                    // utestående tasks
-                    // document.getElementById("task-badge").textContent =
-                    //     data.taskBadge;
-                    // document.getElementById("assign-badge").textContent =
-                    //     data.assignBadge;
-
-                    let groups = await (await fetch(`/api/user/${USER_ID}/groups`)).json();
-                    let g = await (await fetch(`/api/group/${GROUP_ID}`)).json();
-
-                    document.getElementById("sidebar-groups").innerHTML =
-                        sidebarGroups(groups, GROUP_ID);
-
-
-
-                    console.log(g);
-
-                    document.getElementById("group-name").textContent = g.name;
-                    document.getElementById("group-sub").innerHTML =
-                        (g.admin_id == USER_ID
-                          // g.subtitle +
-                            ? ' · <span style="color: var(--accent2)">you are admin</span>'
-                            : "");
-                    // document.getElementById("stat-avghp").textContent =
-                    //     g.stats.avgHp;
-                    // document.getElementById("stat-online").textContent =
-                    //     100;
-                    // document.getElementById("stat-tasks").textContent =
-                    //     g.stats.activeTasks;
-
-                    document.getElementById("members-list").innerHTML =
-                        g.members.map(renderMember).join("");
-                    document.getElementById("group-tasks").innerHTML = g.tasks
-                        .map((t) => renderTask(t, g.admin_id == USER_ID))
-                        .join("");
-
-                    document.getElementById("form-title").textContent =
-                        "New group task — " + g.name;
-
-                    if (!g.admin_id == USER_ID) {
-                        document.getElementById("add-wrap").style.display =
-                            "none";
-                    }
-                }
-
-                setup();
+            setup();
         </script>
     </body>
 </html>
