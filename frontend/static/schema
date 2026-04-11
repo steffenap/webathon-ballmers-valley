@@ -2,7 +2,7 @@
   - name: str
   - health: int
   - nextTick: int
-/group: list of group (id, name)s
+/user/<id>/groups: list of group (id, name)s
 /group/<id>/name: group name
 /group/<id>/members: group member (id, name)s list
 /group/<id>/task: group task (id, name)s
@@ -22,3 +22,4 @@ very human
 POST /login: log in
 - takes {"name": string, "password": password}
 - returns cookie
+very yummy
