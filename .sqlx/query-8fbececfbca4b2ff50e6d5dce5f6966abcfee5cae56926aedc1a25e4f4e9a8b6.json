@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "select id, title from tasks where gr = ?1",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "title",
+        "ordinal": 1,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "8fbececfbca4b2ff50e6d5dce5f6966abcfee5cae56926aedc1a25e4f4e9a8b6"
+}

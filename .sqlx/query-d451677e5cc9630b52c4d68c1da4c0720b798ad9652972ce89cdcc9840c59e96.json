@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "select id, name from groups inner join user_group on user_group.gr = groups.id and user_group.user = ?1",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "d451677e5cc9630b52c4d68c1da4c0720b798ad9652972ce89cdcc9840c59e96"
+}

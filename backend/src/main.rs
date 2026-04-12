@@ -1,10 +1,12 @@
 use std::sync::Arc;
 
 use axum::{
-    Json, Router,
+    Router,
+    extract::State,
+    response::Redirect,
     routing::{delete, get, post},
 };
-use serde::Deserialize;
+use axum_extra::extract::CookieJar;
 use sqlx::SqlitePool;
 use tokio::net::TcpListener;
 
@@ -23,7 +25,6 @@ mod api {
         pub(crate) use std::{collections::HashMap, sync::Arc};
     }
 
-    use axum_extra::extract::cookie;
     use stupid_imports::*;
 
     pub(crate) async fn cookies(cookie_jar: axum_extra::extract::CookieJar) -> Json<()> {
@@ -35,13 +36,13 @@ mod api {
     }
 
     pub(crate) mod user {
-        use std::time::{Instant, UNIX_EPOCH};
+        use std::time::UNIX_EPOCH;
 
-        use axum::{http::StatusCode, response::Redirect};
-        use axum_extra::extract::{CookieJar, cookie::Cookie};
+        use axum::response::Redirect;
+        use axum_extra::extract::CookieJar;
         use serde::Serialize;
 
-        use crate::{UserId, api::group::stuff::UserData, jwt::Authenticator};
+        use crate::{UserId, jwt::{AuthenticatedUserId, Cookie}};
 
         use super::stupid_imports::*;
         pub(crate) async fn groups(
@@ -88,16 +89,9 @@ mod api {
         }
 
         pub(crate) async fn whoami(
-            State(state): State<Arc<AppState>>,
-            jar: CookieJar,
+            AuthenticatedUserId(user): AuthenticatedUserId,
         ) -> Result<Json<UserId>, Redirect> {
-            if let Some(cookie) = crate::jwt::Cookie::from_jar(&jar)
-                && let Some(ans) = state.auth.validate(&cookie)
-            {
-                Ok(Json(ans))
-            } else {
-                Err(Redirect::temporary("/login"))
-            }
+            Ok(Json(user))
         }
 
         #[derive(Deserialize)]
@@ -398,11 +392,13 @@ mod api {
             reward: i32,
             group: Option<u32>,
         }
+
         pub(crate) async fn create(
             State(state): State<Arc<AppState>>,
             jar: CookieJar,
             Json(data): Json<TaskCreationData>,
         ) -> Json<()> {
+            println!("I tried :(");
             let mut conn = state.db.acquire().await.unwrap();
             let TaskCreationData {
                 title,
@@ -458,18 +454,18 @@ async fn main() -> anyhow::Result<()> {
     let app_state = AppState { db, auth };
 
     let static_routes = [
-        ("/", "index.html"),
-        ("/login", "login.html"),
-        ("/style.css", "style.css"),
-        ("/tasks", "tasks.html"),
-        ("/assignments", "assignments.html"),
-        ("/group", "group.html"),
-        ("/utils.js", "utils.js"),
-        ("/images/grinder.png", "images/grinder.png"),
-        ("/register", "register.html"),
+        ("/", "index.html", true),
+        ("/login", "login.html", false),
+        ("/style.css", "style.css", false),
+        ("/tasks", "tasks.html", true),
+        ("/assignments", "assignments.html", true),
+        ("/group", "group.html", true),
+        ("/utils.js", "utils.js", false),
+        ("/images/grinder.png", "images/grinder.png", false),
+        ("/register", "register.html", false),
     ];
     let mut router = Router::new();
-    for (path, real_path) in static_routes {
+    for (path, real_path, requires_auth) in static_routes {
         let data: &'static [u8] =
             Vec::leak(std::fs::read("frontend/static/".to_owned() + real_path)?);
         let content_type = match std::path::Path::new(real_path)
@@ -483,7 +479,15 @@ async fn main() -> anyhow::Result<()> {
         };
         router = router.route(
             path,
-            get(async move || ([("content-type", content_type)], data)),
+            get(
+                async move |jar: CookieJar, State(state): State<Arc<AppState>>| {
+                    if !requires_auth || state.auth.validate_jar(&jar).is_some() {
+                        Ok(([("content-type", content_type)], data))
+                    } else {
+                        Err(Redirect::to("/login"))
+                    }
+                },
+            ),
         );
     }
 

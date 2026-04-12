@@ -39,7 +39,7 @@
         "title": "Attend Thursday study hall session",
         "source": "system",
         "tags": [
-          { "color": "blue", "label": "Study Hall" },
+          { "color": "blue", "label": "StudyHall" },
           { "color": "purple", "label": "MATH301" }
         ],
         "date": "Apr 13",
@@ -92,7 +92,7 @@
       {
         "title": "Attend Monday study hall",
         "source": "system",
-        "tags": [{ "color": "muted", "label": "Study Hall" }],
+        "tags": [{ "color": "muted", "label": "StudyHall" }],
         "date": "Apr 10",
         "hp": 40,
         "done": true
@@ -207,7 +207,7 @@
       "tasks": [
         {
           "title": "Attend Thursday study hall session",
-          "type": "Study Hall",
+          "type": "StudyHall",
           "typeColor": "blue",
           "date": "Apr 13",
           "hp": 40

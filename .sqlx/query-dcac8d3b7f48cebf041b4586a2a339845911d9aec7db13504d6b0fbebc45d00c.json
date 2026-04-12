@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "insert into tasks(title, type, due, reward, gr) values (?1, ?2, ?3, ?4, ?5)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "dcac8d3b7f48cebf041b4586a2a339845911d9aec7db13504d6b0fbebc45d00c"
+}

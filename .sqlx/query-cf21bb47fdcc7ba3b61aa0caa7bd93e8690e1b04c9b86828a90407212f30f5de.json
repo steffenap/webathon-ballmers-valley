@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "insert into user_group(user, gr) values (?1, ?2)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "cf21bb47fdcc7ba3b61aa0caa7bd93e8690e1b04c9b86828a90407212f30f5de"
+}

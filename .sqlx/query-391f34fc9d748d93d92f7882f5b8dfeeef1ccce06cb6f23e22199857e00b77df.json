@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "select title from tasks where id = ?1",
+  "describe": {
+    "columns": [
+      {
+        "name": "title",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "391f34fc9d748d93d92f7882f5b8dfeeef1ccce06cb6f23e22199857e00b77df"
+}

@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "insert into users (username, password, full_name, health, health_last_tick) values (?1, ?2, ?3, ?4, ?5) returning id",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "b2ac3b7287503c88b860e1b5b73bc3ff7b4759f293140a01bf8c5e5acda81a5a"
+}

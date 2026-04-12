@@ -18,7 +18,7 @@
                 <a href="/"><div class="logo">Grind<span>e</span>r</div></a>
                 <div class="topbar-right">
                     <div class="notif-dot"></div>
-                    <div class="avatar-sm" id="topbar-initials">AL</div>
+                    <div class="avatar-sm" id="topbar-initials">-</div>
                 </div>
             </div>
 
@@ -108,7 +108,7 @@
                                 <div class="form-row">
                                     <div class="form-label">Type</div>
                                     <select class="form-input" id="af-type">
-                                        <option>Study Hall</option>
+                                        <option>StudyHall</option>
                                         <option>Social</option>
                                         <option>Reading</option>
                                         <option>Assignment</option>
@@ -164,9 +164,9 @@
         <script src="utils.js"></script>
 
         <script>
-            const GROUP_ID = new URLSearchParams(window.location.search).get(
+            const GROUP_ID = parseInt(new URLSearchParams(window.location.search).get(
                 "id",
-            );
+            ));
 
             if (!GROUP_ID) window.location.href = "/";
 
@@ -193,18 +193,15 @@
                     return;
                 }
                 const typeColors = {
-                    "Study Hall": "blue",
+                    "StudyHall: "blue",
                     Social: "purple",
                     Reading: "amber",
                     Assignment: "green",
                     Other: "muted",
                 };
                 const due = dueVal
-                    ? new Date(dueVal).toLocaleDateString("en-GB", {
-                          day: "numeric",
-                          month: "short",
-                      })
-                    : "No date";
+                    ? Math.floor((new Date(dueVal)).getTime() / 1000)
+                    : null;
                 const group = GROUP_ID;
                 await fetch("/api/task", {
                     method: "POST",
@@ -217,7 +214,7 @@
                         group,
                     }),
                     credentials: "include",
-                });
+                }).then((r) => {});
                 // const card = document.createElement("div");
                 // card.className = "admin-task-card";
                 // card.innerHTML =

@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "select title, type, due, reward from tasks where gr = ?1",
+  "describe": {
+    "columns": [
+      {
+        "name": "title",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "type",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "due",
+        "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "reward",
+        "ordinal": 3,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "2bbfd1fd17426938dbb9767ded5696d03fd25f9acdf61c14402b4dc94edc8339"
+}
