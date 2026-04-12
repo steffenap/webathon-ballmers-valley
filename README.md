@@ -25,15 +25,20 @@ Men alt er ikke bare fryd og gammen, hvis livet ditt går til 0, blir du merket!
 Dette kan skje hvis du ikke gjør nok oppgaver for å holde deg frisk, eller hvis du ikke leverer en oblig i tide!
 Denne straffen bestemmer dere selv, men vi har selvfølgelig noen forslag:
 - Øl?
+- Må være med på gitt arrangement
+- Må møte først på sal
+
 
 Etter du har dødd, resettes livet ditt. Du kommer selvfølgelig ikke unna studiene hvis du faller av tidlig, som alt annet i livet, vil det bare balle seg på.
 
 
 ## Kjøre
 
-\<guide på hvordan man kjører/bygger prosjektet>
+1. Make database
+2. `export DATABASE_URL=sqlite:db.db`
+3. `cargo run`
+  - if no work, `rm db.db` and goto 1
 
 ## Bilder
 
 \<screenshots av prosjektet (blir også postet på webathon siden på echo.uib.no)>
-

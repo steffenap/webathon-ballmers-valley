@@ -18,7 +18,7 @@
                 <a href="/"><div class="logo">Grind<span>e</span>r</div></a>
                 <div class="topbar-right">
                     <div class="notif-dot"></div>
-                    <div class="avatar-sm" id="topbar-initials">AL</div>
+                    <div class="avatar-sm" id="topbar-initials">-</div>
                 </div>
             </div>
 
@@ -86,6 +86,9 @@
                                 <span id="hp-pct">—</span
                                 ><span id="hp-tick">—</span>
                             </div>
+                            <div class="hp-number" id="hp-death">
+                                Deaths: <span id="hp-death-val">—</span>
+                            </div>
                         </div>
                         <div class="deadline-card">
                             <div class="deadline-date">
@@ -124,7 +127,14 @@
             let hp = 0,
                 maxHp = 1000;
 
-            function updateHP(h) {
+            let u;
+
+            let speed = 1;  // DEMO
+
+            function updateHP() {
+                let elapsed = (Date.now() / 1000 ) - u.last_tick
+                hp = u.health - (elapsed * speed / 864);
+                let h = Math.round(hp);
                 const pct = Math.round((h / maxHp) * 100);
                 document.getElementById("hp-val").innerHTML =
                     h + " <span>/ " + maxHp + " HP</span>";
@@ -134,12 +144,25 @@
                 bar.className =
                     "bar-fill " +
                     (pct > 60 ? "high" : pct > 30 ? "mid" : "low");
+                if (hp <= 0) {
+                    checkDeath();
+                }
             }
 
             function gainHP(amount, label) {
                 hp = Math.min(maxHp, hp + amount);
-                updateHP(hp);
+                updateHP();
                 showToast("+" + amount + " HP — " + label);
+            }
+
+            function checkDeath() {
+                await fetch(`/api/user/deaths`)
+                    .then((res) => res.json())
+                    .then((data) => {
+                        hp = data[0];
+                        u.deaths = data[1];
+                        updateHP();
+                    });
             }
 
             async function setup() {
@@ -148,14 +171,13 @@
                     await fetch(`/api/user/${USER_ID}/groups`)
                 ).json();
 
-                let user = await (await fetch(`/api/user/${USER_ID}`)).json();
 
+                 u = await (await fetch(`/api/user/${USER_ID}`)).json();
                 document.getElementById("sidebar-groups").innerHTML =
                     sidebarGroups(groups, null);
 
-                const u = user;
-                hp = u.health;
-                maxHp = maxHp;
+                updateHP();
+                setInterval(updateHP, 1000);
 
                 document.getElementById("topbar-initials").textContent =
                     to_initials(u.full_name);
@@ -167,10 +189,12 @@
                 //     u.groups.join(" · ");
 
                 updateHP(hp);
+                console.log(u);
                 document.getElementById("hp-decay-text").textContent =
-                    "−" + 10000 + " HP / day";
+                    "−" + 100 + " HP / day";
                 document.getElementById("hp-tick").textContent =
                     "next tick in " + 1000;
+                document.getElementById("hp-death-val").textContent = u.deaths;
 
                 const dl = data.nextDeadline;
                 document.getElementById("dl-day").textContent = dl.day;

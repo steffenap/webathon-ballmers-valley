@@ -25,7 +25,7 @@ function sidebarGroups(groups, GROUP_ID) {
     .map((a) => {
       let [id, name] = a;
       console.log(id, name, GROUP_ID);
-      const isActive = id === GROUP_ID;
+      const isActive = id == GROUP_ID;
       return (
         '<a class="sitem' +
         (isActive ? " active" : "") +

@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::UNIX_EPOCH};
 
 use axum::{
     Router,
@@ -13,8 +13,38 @@ use tokio::net::TcpListener;
 pub(crate) mod jwt;
 
 pub type UserId = u32;
+fn now() -> i64 {
+    UNIX_EPOCH.elapsed().unwrap().as_secs() as i64
+}
 
 mod api {
+
+    async fn calculate_deaths(conn: &mut sqlx::SqliteConnection, user_id: u32) -> (u64, u64) {
+        let user_details = sqlx::query!(
+            "select health, death_count, health_last_tick from users where id = ?1",
+            user_id
+        )
+        .fetch_one(&mut *conn)
+        .await
+        .unwrap();
+        let now = crate::now();
+        let elapsed = now - user_details.health_last_tick;
+
+        let health = user_details.health - elapsed / 864;
+
+        if health <= 0 {
+            let new_deaths = -health % 500 + 1;
+            let new_health = health + new_deaths * 500;
+            sqlx::query!("update users set health = ?1, death_count = death_count + ?4, health_last_tick = ?2 where id = ?3", new_health, now, user_id, new_deaths).execute(&mut *conn).await.unwrap();
+            (
+                new_health as u64,
+                user_details.death_count as u64 + new_deaths as u64,
+            )
+        } else {
+            (health as u64, user_details.death_count as u64)
+        }
+    }
+
     mod stupid_imports {
         pub(crate) use crate::AppState;
         pub(crate) use axum::{
@@ -36,13 +66,12 @@ mod api {
     }
 
     pub(crate) mod user {
-        use std::time::UNIX_EPOCH;
-
         use axum::response::Redirect;
         use axum_extra::extract::CookieJar;
         use serde::Serialize;
+        use sqlx::{SqliteConnection, pool::PoolConnection};
 
-        use crate::{UserId, jwt::{AuthenticatedUserId, Cookie}};
+        use crate::{UserId, jwt::AuthenticatedUserId};
 
         use super::stupid_imports::*;
         pub(crate) async fn groups(
@@ -64,6 +93,8 @@ mod api {
             name: String,
             full_name: String,
             health: u32,
+            last_tick: u64,
+            deaths: u64,
         }
 
         pub(crate) async fn user_details(
@@ -73,7 +104,7 @@ mod api {
             let mut conn = state.db.acquire().await.unwrap();
 
             let res = sqlx::query!(
-                "select id, username, full_name, health from users where id = ?1",
+                "select id, username, full_name, health, health_last_tick, death_count from users where id = ?1",
                 user_id
             )
             .fetch_one(&mut *conn)
@@ -85,6 +116,8 @@ mod api {
                 name: res.username,
                 full_name: res.full_name,
                 health: res.health as u32,
+                last_tick: res.health_last_tick as u64,
+                deaths: res.death_count as u64,
             })
         }
 
@@ -107,9 +140,9 @@ mod api {
             Json(data): Json<SignupData>,
         ) -> (CookieJar, Json<()>) {
             let mut conn = state.db.acquire().await.unwrap();
-            let elapsed = UNIX_EPOCH.elapsed().unwrap().as_secs() as i64;
+            let elapsed = crate::now();
             let rec = sqlx::query!(
-                "insert into users (username, password, full_name, health, health_last_tick) values (?1, ?2, ?3, ?4, ?5) returning id", data.username, data.password, data.fullname, 1000, elapsed
+                "insert into users (username, password, full_name, health, health_last_tick, death_count) values (?1, ?2, ?3, ?4, ?5, ?6) returning id", data.username, data.password, data.fullname, 1000, elapsed, 0
             ).fetch_one(&mut *conn).await.unwrap();
 
             let mut cookie = axum_extra::extract::cookie::Cookie::from(
@@ -147,6 +180,14 @@ mod api {
             );
             cookie.set_path("/");
             (jar.add(cookie), Json(()))
+        }
+
+        pub(crate) async fn deaths(
+            State(state): State<Arc<AppState>>,
+            AuthenticatedUserId(user): AuthenticatedUserId,
+        ) -> Json<(u64, u64)> {
+            let mut conn = state.db.acquire().await.unwrap();
+            Json(crate::api::calculate_deaths(&mut conn, user).await)
         }
     }
 
@@ -216,10 +257,11 @@ mod api {
                 .await
                 .unwrap();
 
-                let group_data = sqlx::query!("select name from groups where id = ?1", group_id)
-                    .fetch_one(&mut *conn)
-                    .await
-                    .unwrap();
+                let group_data =
+                    sqlx::query!("select name, admin from groups where id = ?1", group_id)
+                        .fetch_one(&mut *conn)
+                        .await
+                        .unwrap();
 
                 let tasks = task_res
                     .into_iter()
@@ -239,7 +281,7 @@ mod api {
 
                 Json(GroupData {
                     name: group_data.name,
-                    admin_id: 0,
+                    admin_id: group_data.admin as u32,
                     users,
                     tasks,
                 })
@@ -348,9 +390,42 @@ mod api {
     }
 
     pub(crate) mod task {
+        use axum::http::StatusCode;
         use axum_extra::extract::CookieJar;
 
+        use crate::{UserId, jwt::AuthenticatedUserId};
+
         use super::stupid_imports::*;
+
+        pub(crate) async fn completed(
+            AuthenticatedUserId(user): AuthenticatedUserId,
+            Path(task_id): Path<u32>,
+            State(state): State<Arc<AppState>>,
+        ) -> Json<bool> {
+            let mut conn = state.db.acquire().await.unwrap();
+            let _ = crate::api::calculate_deaths(&mut *conn, user).await;
+
+            match sqlx::query!(
+                "insert into done(user, task) values (?1, ?2)",
+                user,
+                task_id
+            )
+            .execute(&mut *conn)
+            .await
+            {
+                Ok(_) => {
+                    let task = sqlx::query!("select reward from tasks where id = ?1", task_id)
+                        .fetch_one(&mut *conn)
+                        .await
+                        .unwrap();
+                    let now = crate::now();
+                    sqlx::query!("update users set health = health + ?2, health_last_tick = ?3 where id = ?1", user, task.reward, now).execute(&mut *conn).await.unwrap();
+                    Json(true)
+                }
+                Err(_) => Json(false),
+            }
+        }
+
         pub(crate) async fn title(
             Path(task_id): Path<u32>,
             State(state): State<Arc<AppState>>,
@@ -395,18 +470,26 @@ mod api {
 
         pub(crate) async fn create(
             State(state): State<Arc<AppState>>,
-            jar: CookieJar,
-            Json(data): Json<TaskCreationData>,
-        ) -> Json<()> {
-            println!("I tried :(");
-            let mut conn = state.db.acquire().await.unwrap();
-            let TaskCreationData {
+            AuthenticatedUserId(user): AuthenticatedUserId,
+            Json(TaskCreationData {
                 title,
                 r#type,
                 due,
                 reward,
                 group,
-            } = data;
+            }): Json<TaskCreationData>,
+        ) -> Result<Json<()>, StatusCode> {
+            let mut conn = state.db.acquire().await.unwrap();
+
+            let admin = sqlx::query!("select admin from groups where id = ?1", group)
+                .fetch_one(&mut *conn)
+                .await
+                .unwrap()
+                .admin as UserId;
+
+            if admin != user {
+                return Err(StatusCode::UNAUTHORIZED);
+            }
 
             let r#type = r#type.map(|x| x.to_str());
             let due = due.map(|x| x as i64);
@@ -423,7 +506,7 @@ mod api {
             .await
             .unwrap();
 
-            Json(())
+            Ok(Json(()))
         }
 
         pub(crate) async fn delete(
@@ -507,6 +590,8 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/cookies", get(api::cookies))
         .route("/api/user/{user_id}", get(api::user::user_details))
         .route("/api/user/signin", post(api::user::signin))
+        .route("/api/user/deaths", get(api::user::deaths))
+        .route("/api/task/{task_id}/completed", post(api::task::completed))
         .route("/api/task/{task_id}", delete(api::task::delete))
         .route("/api/task", post(api::task::create))
         .route("/api/task/{task_id}/title", get(api::task::title));

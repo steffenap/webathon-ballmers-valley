@@ -49,15 +49,14 @@ pub(crate) struct AuthenticatedUserId(pub UserId);
 impl FromRequestParts<Arc<crate::AppState>> for AuthenticatedUserId {
     type Rejection = Redirect;
 
-    fn from_request_parts(
+    async fn from_request_parts(
         parts: &mut axum::http::request::Parts,
         state: &Arc<crate::AppState>,
-    ) -> impl Future<Output = Result<Self, Self::Rejection>> + Send {
-        async move {
-            match CookieJar::from_request_parts(parts, state).await {
-                Ok(ref res) => state.auth.validate_jar(res).map(AuthenticatedUserId),
-            }
-            .ok_or(Redirect::to("/login"))
+    ) -> Result<Self, Self::Rejection> {
+        match CookieJar::from_request_parts(parts, state).await {
+            Ok(ref res) => state.auth.validate_jar(res),
         }
+        .ok_or(Redirect::to("/login"))
+        .map(AuthenticatedUserId)
     }
 }

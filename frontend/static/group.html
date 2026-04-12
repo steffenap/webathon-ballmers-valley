@@ -164,11 +164,11 @@
         <script src="utils.js"></script>
 
         <script>
-            const GROUP_ID = parseInt(new URLSearchParams(window.location.search).get(
-                "id",
-            ));
+            const GROUP_ID = parseInt(
+                new URLSearchParams(window.location.search).get("id"),
+            );
 
-            if (!GROUP_ID) window.location.href = "/";
+            if (GROUP_ID === null) window.location.href = "/";
 
             function showAdminForm() {
                 const f = document.getElementById("admin-form");
@@ -193,14 +193,14 @@
                     return;
                 }
                 const typeColors = {
-                    "StudyHall: "blue",
+                    StudyHall: "blue",
                     Social: "purple",
                     Reading: "amber",
                     Assignment: "green",
                     Other: "muted",
                 };
                 const due = dueVal
-                    ? Math.floor((new Date(dueVal)).getTime() / 1000)
+                    ? Math.floor(new Date(dueVal).getTime() / 1000)
                     : null;
                 const group = GROUP_ID;
                 await fetch("/api/task", {
@@ -214,29 +214,11 @@
                         group,
                     }),
                     credentials: "include",
-                }).then((r) => {});
-                // const card = document.createElement("div");
-                // card.className = "admin-task-card";
-                // card.innerHTML =
-                //     '<div class="admin-task-info">' +
-                //     '<div class="admin-task-title">' +
-                //     title +
-                //     '</div><div class="admin-task-meta">' +
-                //     '<span class="pill ' +
-                //     (typeColors[type] || "muted") +
-                //     '">' +
-                //     type +
-                //     '</span><span class="date-label">' +
-                //     dueStr +
-                //     '</span><span class="pill green">+' +
-                //     hp +
-                //     " HP</span></div></div>" +
-                //     '<button class="btn ghost" style="font-size: 11px; padding: 5px 10px; flex-shrink: 0;" ' +
-                //     "onclick=\"this.closest('.admin-task-card').remove(); showToast('Task removed')\">" +
-                //     "Remove</button>";
-                // document.getElementById("group-tasks").appendChild(card);
-                // document.getElementById("af-title").value = "";
-                // document.getElementById("af-hp").value = "";
+                }).then((r) => {
+                    if (r.ok) {
+                        window.location.reload();
+                    }
+                });
                 hideAdminForm();
                 showToast("Task assigned to group");
             }

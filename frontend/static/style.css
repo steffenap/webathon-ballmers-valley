@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap');
 * {
     box-sizing: border-box;
     margin: 0;
@@ -24,7 +25,7 @@ html {
     --red: #f04b4b;
     --amber: #f59e0b;
     --blue: #38bdf8;
-    --display: "Syne", sans-serif;
+    --display: "Nunito", sans-serif;
     --body: "DM Sans", sans-serif;
     --mono: "Space Mono", monospace;
 }
@@ -55,7 +56,7 @@ body {
 .logo {
     font-family: var(--display);
     font-weight: 800;
-    font-size: 16px;
+    font-size: 22px;
     letter-spacing: -0.3px;
     color: var(--text);
 }
