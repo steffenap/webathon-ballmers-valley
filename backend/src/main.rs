@@ -51,7 +51,7 @@ mod api {
             Json,
             extract::{Path, State},
         };
-        pub(crate) use serde::Deserialize;
+        pub(crate) use serde::{Deserialize, Serialize};
         pub(crate) use std::{collections::HashMap, sync::Arc};
     }
 
@@ -88,6 +88,15 @@ mod api {
         }
 
         #[derive(Serialize)]
+        struct TaskDetails {
+            title: String,
+            r#type: Option<String>,
+            due: Option<u64>,
+            reward: u64,
+            group: Option<u32>,
+        }
+
+        #[derive(Serialize)]
         pub(crate) struct UserDetails {
             id: u32,
             name: String,
@@ -95,6 +104,7 @@ mod api {
             health: u32,
             last_tick: u64,
             deaths: u64,
+            tasks: Vec<TaskDetails>,
         }
 
         pub(crate) async fn user_details(
@@ -111,6 +121,11 @@ mod api {
             .await
             .unwrap();
 
+            let relevant_tasks = sqlx::query!(
+                "select title, type, due, reward, gr from tasks left join done on done.user = ?1 and done.task = tasks.id",
+                user_id
+            ).fetch_all(&mut *conn).await.unwrap();
+
             Json(UserDetails {
                 id: res.id as u32,
                 name: res.username,
@@ -118,6 +133,15 @@ mod api {
                 health: res.health as u32,
                 last_tick: res.health_last_tick as u64,
                 deaths: res.death_count as u64,
+                tasks: relevant_tasks.into_iter().map(|v| {
+                    TaskDetails {
+                        title: v.title,
+                        r#type: v.r#type,
+                        due: v.due.map(|x| x as u64),
+                        reward: v.reward as u64,
+                        group: v.gr.map(|x| x as u32),
+                    }
+                }).collect()
             })
         }
 
@@ -440,7 +464,7 @@ mod api {
             Json(rec.title)
         }
 
-        #[derive(Deserialize, Copy, Clone)]
+        #[derive(Serialize, Deserialize, Copy, Clone)]
         pub(crate) enum TaskType {
             Assignment,
             Social,

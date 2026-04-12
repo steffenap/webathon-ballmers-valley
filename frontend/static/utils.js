@@ -41,6 +41,14 @@ function sidebarGroups(groups, GROUP_ID) {
     .join("");
 }
 
+function formaterDue(due) {
+  if (due === null) return "no due time";
+  let d = new Date(0);
+  d.setUTCSeconds(due);
+  return d.toString();
+
+}
+
 function to_initials(name) {
   return name ? name.match(/\b(\w)/g).join("") : "ABCD";
 }

@@ -86,8 +86,8 @@
                                 <span id="hp-pct">—</span
                                 ><span id="hp-tick">—</span>
                             </div>
-                            <div class="hp-number" id="hp-death">
-                                Deaths: <span id="hp-death-val">—</span>
+                            <div id="hp-death">
+                                Deaths: <span class="hp-number" id="hp-death-val">—</span>
                             </div>
                         </div>
                         <div class="deadline-card">
@@ -155,7 +155,7 @@
                 showToast("+" + amount + " HP — " + label);
             }
 
-            function checkDeath() {
+            async function checkDeath() {
                 await fetch(`/api/user/deaths`)
                     .then((res) => res.json())
                     .then((data) => {

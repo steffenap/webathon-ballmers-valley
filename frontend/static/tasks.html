@@ -96,6 +96,7 @@
         ></div>
         <div class="toast" id="toast"></div>
 
+        <script src="utils.js"></script>
         <script>
             let taskBadge = 0;
 
@@ -139,31 +140,31 @@
             };
 
             function renderTask(task) {
-                const doneClass = task.done ? " done" : "";
-                const strikeStyle = task.done
+                const doneClass = false ? " done" : "";
+                const strikeStyle = false
                     ? ' style="text-decoration: line-through"'
                     : "";
-                const chkClass = task.done ? " on" : "";
-                const hpClass = task.done
+                const chkClass = false ? " on" : "";
+                const hpClass = false
                     ? ' style="color: var(--muted)"'
                     : "";
                 const dateClass =
-                    "date-label" + (task.done ? " faint" : "");
-                const pills = task.tags
-                    .map(
-                        (t) =>
-                            '<span class="pill ' +
-                            t.color +
-                            '">' +
-                            t.label +
-                            "</span>",
-                    )
-                    .join("");
+                    "date-label" + (false ? " faint" : "");
+                // const pills = task.tags
+                //     .map(
+                //         (t) =>
+                //             '<span class="pill ' +
+                //             t.color +
+                //             '">' +
+                //             t.label +
+                //             "</span>",
+                //     )
+                //     .join("");
                 return (
                     '<div class="task-card' +
                     doneClass +
                     '" onclick="checkTask(this, ' +
-                    task.hp +
+                    task.reward +
                     ')">' +
                     '<div class="chk' +
                     chkClass +
@@ -175,62 +176,51 @@
                     task.title +
                     "</div>" +
                     '<div class="task-meta">' +
-                    (sourceTags[task.source] || "") +
-                    pills +
+                    // (sourceTags[task.source] || "") +
+                    // pills +
                     '<span class="' +
                     dateClass +
                     '">' +
-                    task.date +
+                    formaterDue(task.due) +
                     "</span>" +
                     "</div></div>" +
                     '<div class="task-hp"' +
                     hpClass +
                     ">+" +
-                    task.hp +
+                    task.reward +
                     " HP</div>" +
                     "</div>"
                 );
             }
 
-            function sidebarGroups(groups) {
-                return groups
-                    .map(
-                        (g) =>
-                            '<a class="sitem" href="/group?id=' +
-                            g.id +
-                            '"><div class="gpip" style="background: ' +
-                            g.color +
-                            '"></div>' +
-                            g.name +
-                            (g.isAdmin
-                                ? '<span class="sitem-admin">admin</span>'
-                                : "") +
-                            "</a>",
-                    )
-                    .join("");
-            }
+            const USER_ID = await (await fetch(`/api/user/whoami`)).json();
 
-            fetch("/data.json")
-                .then((r) => r.json())
-                .then((data) => {
-                    document.getElementById(
-                        "topbar-initials",
-                    ).textContent = data.user.initials;
+            let user_data = await (
+                await fetch(`/api/user/${USER_ID}`)
+            ).json();
 
-                    taskBadge = data.taskBadge;
-                    document.getElementById("task-badge").textContent =
-                        taskBadge;
-                    document.getElementById("assign-badge").textContent =
-                        data.assignBadge;
+            let groups = await (
+                await fetch(`/api/user/${USER_ID}/groups`)
+            ).json();
 
-                    document.getElementById("sidebar-groups").innerHTML =
-                        sidebarGroups(data.groups);
+            document.getElementById(
+                "topbar-initials",
+            ).textContent = to_initials(user_data.full_name);
 
-                    document.getElementById("due-soon-list").innerHTML =
-                        data.tasks.dueSoon.map(renderTask).join("");
-                    document.getElementById("upcoming-list").innerHTML =
-                        data.tasks.upcoming.map(renderTask).join("");
-                });
+            taskBadge = data.taskBadge;
+            document.getElementById("task-badge").textContent =
+                2;
+            document.getElementById("assign-badge").textContent =
+                data.3;
+
+            document.getElementById("sidebar-groups").innerHTML =
+                sidebarGroups(groups, null);
+
+            // document.getElementById("due-soon-list").innerHTML =
+            //     user_data.tasks.map(renderTask).join("");
+            document.getElementById("upcoming-list").innerHTML =
+                data.tasks.map(renderTask).join("");
+
         </script>
     </body>
 </html>

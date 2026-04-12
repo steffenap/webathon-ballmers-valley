@@ -290,7 +290,7 @@
                     '">' +
                     task.type +
                     '</span><span class="date-label">' +
-                    task.due +
+                    formaterDue(task.due) +
                     '</span><span class="pill green">+' +
                     task.reward +
                     " HP</span></div></div>" +
@@ -305,7 +305,6 @@
                 let user_data = await (
                     await fetch(`/api/user/${USER_ID}`)
                 ).json();
-                console.log(user_data);
                 document.querySelector("#topbar-initials").textContent =
                     to_initials(user_data.full_name);
 

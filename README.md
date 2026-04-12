@@ -41,4 +41,8 @@ Etter du har dødd, resettes livet ditt. Du kommer selvfølgelig ikke unna studi
 
 ## Bilder
 
-\<screenshots av prosjektet (blir også postet på webathon siden på echo.uib.no)>
+![Login](screenshots/Login.png).
+![Register](screenshots/register.png).
+![Index](screenshots/index.png).
+![Assignments](screenshots/assignments.png).
+![Groups](screenshots/group.png).
