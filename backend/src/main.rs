@@ -133,15 +133,16 @@ mod api {
                 health: res.health as u32,
                 last_tick: res.health_last_tick as u64,
                 deaths: res.death_count as u64,
-                tasks: relevant_tasks.into_iter().map(|v| {
-                    TaskDetails {
+                tasks: relevant_tasks
+                    .into_iter()
+                    .map(|v| TaskDetails {
                         title: v.title,
                         r#type: v.r#type,
                         due: v.due.map(|x| x as u64),
                         reward: v.reward as u64,
                         group: v.gr.map(|x| x as u32),
-                    }
-                }).collect()
+                    })
+                    .collect(),
             })
         }
 
@@ -224,6 +225,7 @@ mod api {
             use super::super::stupid_imports::*;
             #[derive(Serialize)]
             pub(crate) struct TaskData {
+                id: u32,
                 title: String,
                 r#type: Option<String>,
                 due: Option<u64>,
@@ -232,12 +234,14 @@ mod api {
 
             impl TaskData {
                 fn new(
+                    id: u32,
                     title: String,
                     r#type: Option<String>,
                     due: Option<u64>,
                     reward: u32,
                 ) -> Self {
                     TaskData {
+                        id,
                         title,
                         r#type,
                         due,
@@ -274,7 +278,7 @@ mod api {
                 .await.unwrap();
 
                 let task_res = sqlx::query!(
-                    "select title, type, due, reward from tasks where gr = ?1",
+                    "select id, title, type, due, reward from tasks where gr = ?1",
                     group_id
                 )
                 .fetch_all(&mut *conn)
@@ -290,7 +294,13 @@ mod api {
                 let tasks = task_res
                     .into_iter()
                     .map(|a| {
-                        TaskData::new(a.title, a.r#type, a.due.map(|x| x as u64), a.reward as u32)
+                        TaskData::new(
+                            a.id as u32,
+                            a.title,
+                            a.r#type,
+                            a.due.map(|x| x as u64),
+                            a.reward as u32,
+                        )
                     })
                     .collect::<Vec<TaskData>>();
                 let users = user_res

@@ -273,10 +273,18 @@
                 );
             }
 
+            async function removeTask(task) {
+                await fetch(`/api/task/${task}`, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                });
+            }
+
             function renderTask(task, isAdmin) {
                 const removeBtn = isAdmin
                     ? '<button class="btn ghost" style="font-size: 11px; padding: 5px 10px; flex-shrink: 0;" ' +
-                      "onclick=\"this.closest('.admin-task-card').remove(); showToast('Task removed')\">" +
+                      `onclick="removeTask(${task.id}); this.closest('.admin-task-card').remove(); showToast('Task removed')">` +
                       "Remove</button>"
                     : "";
                 return (
